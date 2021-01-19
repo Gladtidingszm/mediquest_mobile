@@ -1,7 +1,14 @@
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:mediquest_mobile/screens/dash_board.dart';
+import 'package:mediquest_mobile/test.dart';
 
+import 'screens/complete_form.dart';
 import 'screens/questionaire.dart';
+import 'screens/questionaire_list.dart';
 
+import 'package:flutter_localizations/flutter_localizations.dart';
 void main() {
   runApp(MyApp());
 }
@@ -29,6 +36,19 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: MyHomePage(title: 'Survey App'),
+      localizationsDelegates: [
+        FormBuilderLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('en', ''),
+        Locale('es', ''),
+        Locale('fr', ''),
+        Locale('ja', ''),
+        Locale('pt', ''),
+        Locale('sk', ''),
+      ],
     );
   }
 }
@@ -53,31 +73,72 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  int _currentIndex = 0;
+  PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.1,
+        backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
 
-        title: Text(widget.title),
+
       ),
-      body: Center(
 
-        child: Column(
-
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: SizedBox.expand(
+        child: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() => _currentIndex = index);
+          },
           children: <Widget>[
-            Expanded(child: Questionaire()),
+            SO(),
+            ListPage(title: "Title"),
+            Questionaire(),
+            CompleteForm(),
 
           ],
         ),
       ),
-     /* floatingActionButton: FloatingActionButton(
-        onPressed:  () => print("am pressed"),
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), */// This trailing comma makes auto-formatting nicer for build methods.
+      bottomNavigationBar: BottomNavyBar(
+        selectedIndex: _currentIndex,
+        onItemSelected: (index) {
+          setState(() => _currentIndex = index);
+          _pageController.jumpToPage(index);
+        },
+        items: <BottomNavyBarItem>[
+          BottomNavyBarItem(
+              title: Text('Item One'),
+              icon: Icon(Icons.home)
+          ),
+          BottomNavyBarItem(
+              title: Text('Item Two'),
+              icon: Icon(Icons.apps),
+          ),
+          BottomNavyBarItem(
+              title: Text('Item Three'),
+              icon: Icon(Icons.chat_bubble)
+          ),
+          BottomNavyBarItem(
+              title: Text('Item Four'),
+              icon: Icon(Icons.settings)
+          ),
+        ],
+      ),
+
     );
   }
 }

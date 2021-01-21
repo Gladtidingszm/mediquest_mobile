@@ -105,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
             setState(() => _currentIndex = index);
           },
           children: <Widget>[
-            SO(),
+            DashBoard(),
             ListPage(title: "Title"),
             Questionaire(),
             CompleteForm(),
@@ -121,11 +121,11 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         items: <BottomNavyBarItem>[
           BottomNavyBarItem(
-              title: Text('Item One'),
+              title: Text('Home'),
               icon: Icon(Icons.home)
           ),
           BottomNavyBarItem(
-              title: Text('Item Two'),
+              title: Text('Questionnaires'),
               icon: Icon(Icons.apps),
           ),
           BottomNavyBarItem(

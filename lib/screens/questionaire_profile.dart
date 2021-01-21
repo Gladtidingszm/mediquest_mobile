@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mediquest_mobile/models/questionaire.dart';
 import 'package:mediquest_mobile/screens/complete_form.dart';
+import 'package:mediquest_mobile/screens/submissions.dart';
 import 'package:mediquest_mobile/test.dart';
 
 import 'questionaire.dart';
@@ -126,7 +127,7 @@ class DetailPage extends StatelessWidget {
             RaisedButton(
               onPressed: () => {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                  return  Scaffold(body: Container(child:CompleteForm(),));
+                  return  Scaffold(body: Container(child:Submissions(),));
 
                 }))
               },

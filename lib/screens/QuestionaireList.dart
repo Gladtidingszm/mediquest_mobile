@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mediquest_mobile/components/questionaire_list_item.dart';
-import 'package:mediquest_mobile/models/questionaire.dart';
-import 'package:mediquest_mobile/screens/questionaire.dart';
-import 'package:mediquest_mobile/screens/questionaire_profile.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:mediquest_mobile/models/Lesson.dart';
 
 class ListPage extends StatefulWidget {
   ListPage({Key key, this.title}) : super(key: key);

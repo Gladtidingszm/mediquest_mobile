@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mediquest_mobile/models/questionaire.dart';
-import 'package:mediquest_mobile/screens/questionaire_profile.dart';
-
+import 'package:mediquest_mobile/models/Lesson.dart';
+import 'package:mediquest_mobile/screens/QuestionaireProfile.dart';
 
 class QuestionaireListItem extends StatelessWidget {
   Lesson _lesson;
@@ -14,20 +13,21 @@ class QuestionaireListItem extends StatelessWidget {
       elevation: 8.0,
       margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
       child: Container(
-        decoration: BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
-        child:ListTile(
+        decoration: BoxDecoration(color: Colors.white),
+        child: ListTile(
           contentPadding:
-          EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
           leading: Container(
             padding: EdgeInsets.only(right: 12.0),
             decoration: new BoxDecoration(
                 border: new Border(
-                    right: new BorderSide(width: 1.0, color: Colors.white24))),
-            child: Icon(Icons.autorenew, color: Colors.white),
+                    right: new BorderSide(width: 1.0, color: Colors.white))),
+            child: Icon(Icons.autorenew, color: Colors.grey),
           ),
           title: Text(
             _lesson.title,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style:
+                TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold),
             overflow: TextOverflow.ellipsis,
           ),
           // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
@@ -48,12 +48,12 @@ class QuestionaireListItem extends StatelessWidget {
                 child: Padding(
                     padding: EdgeInsets.only(left: 10.0),
                     child: Text(_lesson.level,
-                        style: TextStyle(color: Colors.white))),
+                        style: TextStyle(color: Colors.black))),
               )
             ],
           ),
           trailing:
-          Icon(Icons.keyboard_arrow_right, color: Colors.white, size: 30.0),
+              Icon(Icons.keyboard_arrow_right, color: Colors.black, size: 30.0),
           onTap: () {
             Navigator.push(
                 context,

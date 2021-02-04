@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mediquest_mobile/models/questionaire.dart';
-import 'package:mediquest_mobile/screens/complete_form.dart';
-import 'package:mediquest_mobile/screens/submissions.dart';
-import 'package:mediquest_mobile/test.dart';
+import 'package:mediquest_mobile/models/Lesson.dart';
 
-import 'questionaire.dart';
+import 'PatientListScreen.dart';
 
 class DetailPage extends StatelessWidget {
   final Lesson lesson;
@@ -115,25 +112,16 @@ class DetailPage extends StatelessWidget {
           children: [
             RaisedButton(
               onPressed: () => {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                  return  Scaffold(body: Container(child:CompleteForm(),));
-
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return Scaffold(
+                      body: Container(
+                    child: PatientListScreen(),
+                  ));
                 }))
               },
               color: Color.fromRGBO(58, 66, 86, 1.0),
-              child:
-              Text("TAKE THIS SURVEY", style: TextStyle(color: Colors.white)),
-            ),
-            RaisedButton(
-              onPressed: () => {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                  return  Scaffold(body: Container(child:Submissions(),));
-
-                }))
-              },
-              color: Color.fromRGBO(58, 66, 86, 1.0),
-              child:
-              Text("SUBMISSIONS", style: TextStyle(color: Colors.white)),
+              child: Text("START", style: TextStyle(color: Colors.white)),
             ),
           ],
         ));

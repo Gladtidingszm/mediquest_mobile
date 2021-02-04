@@ -2,7 +2,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:mediquest_mobile/models/Institution.dart';
 
 part 'Question.g.dart';
-
 @JsonSerializable(explicitToJson: true)
 class Question {
   int id;
@@ -34,7 +33,6 @@ class Question {
       this.institution,
       this.createdAt,
       this.updatedAt);
-
   factory Question.fromJson(Map<String, dynamic> json) =>
       _$QuestionFromJson(json);
 

@@ -17,4 +17,5 @@ class Institution {
       _$InstitutionFromJson(json);
 
   Map<String, dynamic> toJson() => _$InstitutionToJson(this);
+
 }

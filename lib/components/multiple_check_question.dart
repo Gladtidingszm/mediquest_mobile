@@ -1,52 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_question_answer_widget/flutter_question_answer_widget.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:mediquest_mobile/models/Question.dart';
 
-class MultiCheckQuestion extends StatefulWidget {
+// ignore: must_be_immutable
+class MultipleSelectQuestion extends StatefulWidget {
 
-  List<String> _options=[];
-  int _questionNumber;
-  String _question;
+  List<String> options;
 
-  MultiCheckQuestion(this._question,
-      this._options, this._questionNumber);
+
+  MultipleSelectQuestion(Question question) {
+    this.question = question?.questionText;
+    this.options = question?.options?.split(",");
+    this.maxSelect = question.selectionLimit;
+  }
+
+  String question;
+
+  int maxSelect;
 
   @override
-  _MultiCheckQuestionState createState() =>
-      _MultiCheckQuestionState();
+  _MultipleSelectQuestionState createState() => _MultipleSelectQuestionState();
 }
 
-class _MultiCheckQuestionState extends State<MultiCheckQuestion> {
+class _MultipleSelectQuestionState extends State<MultipleSelectQuestion> {
 
-  List selectedOptions = [];
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle display1 = Theme.of(context).textTheme.headline4;
-    return Container(
-      margin: EdgeInsets.all(20),
-      child: Column(
-        children: [
-          FlutterQuestionAnswerWidget.multiCheckSelection(
-              answered: selectedOptions,
-              question: widget._questionNumber.toString()+". ${widget._question}",
-              questionTextStyle: GoogleFonts.oswald(textStyle: display1,fontSize:17,fontWeight: FontWeight.bold ),
-              answerList: widget._options,
-              answersFontFamily: "normal",
-              onChanged: (String value) {
-                if (selectedOptions.contains(value)) {
-                  setState(() {
-                    selectedOptions.remove(value);
-                  });
-                } else {
-                  setState(() {
-                    selectedOptions.add(value);
-                  });
-                }
-              },
-              activeColor: Colors.red),
+    int length = widget.options.length;
+    List<FormBuilderFieldOption> optionsView = List();
+    widget.options.forEach((element) {
+      optionsView.add(FormBuilderFieldOption(value: element,));
+    });
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Container(
+        child: FormBuilderCheckboxGroup(
 
-        ],
+          decoration: InputDecoration(
+              labelText: widget.question),
+          name: 'languages',
+          initialValue: [""],
+          options: optionsView,
+          onChanged: (value) {
+
+
+          },
+
+          separator: const VerticalDivider(
+            width: 10,
+            thickness: 5,
+            color: Colors.red,
+          ),
+        ),
       ),
     );
   }

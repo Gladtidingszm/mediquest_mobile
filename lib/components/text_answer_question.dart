@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:mediquest_mobile/models/Question.dart';
+import 'package:mediquest_mobile/utils/GeneralUtils.dart';
 
 class TextAnswerQuestion extends StatefulWidget {
+  Question question;
 
-
-  int _questionNumber;
-
-  TextAnswerQuestion(this._questionNumber, this._question);
-
-  String _question;
-  String answer;
+  TextAnswerQuestion(Question question);
 
   @override
   _TextAnswerQuestionState createState() => _TextAnswerQuestionState();
@@ -18,53 +15,38 @@ class TextAnswerQuestion extends StatefulWidget {
 class _TextAnswerQuestionState extends State<TextAnswerQuestion> {
   @override
   Widget build(BuildContext context) {
-    final TextStyle display1 = Theme.of(context).textTheme.headline4;
-    return  Container(
-      margin: EdgeInsets.all(20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-           Expanded(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Container(
+        child: FormBuilderTextField(
+          autovalidateMode: AutovalidateMode.always,
+          name: ' ',
+          decoration: InputDecoration(
+            labelText: widget?.question?.questionText,
 
-            child: Container
-              (
-              child:  Row(
-
-                children: [
-                  Text("${widget._questionNumber}.  ",style: GoogleFonts.oswald(textStyle: display1,fontSize:17,fontWeight: FontWeight.bold ),),
-                    Expanded(
-                      child: TextFormField(
-                        maxLines: 3,
-                        decoration: new InputDecoration(
-                        labelText: widget._question,
-                        labelStyle: GoogleFonts.oswald(textStyle: display1,fontSize:17,fontWeight: FontWeight.bold ),
-                        fillColor: Colors.white,
-
-                      ),
-                      validator: (val) {
-                        if(val.length==0) {
-                          return "Email cannot be empty";
-                        }else{
-                          return null;
-                        }
-                      },
-                      onChanged: (value) {
-                        widget.answer=value;
-                      },
-                      keyboardType: TextInputType.text,
-                      autocorrect: true,
-                      style: new TextStyle(
-                        fontFamily: "Poppins",
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-
-            ),
+            /*suffixIcon: _hasError
+                 ? const Icon(Icons.error, color: Colors.red)
+                 : const Icon(Icons.check, color: Colors.green),*/
           ),
-        ],
+          onChanged: (val) {
+            setState(() {
+              // _hasError =
+              // !_formKey.currentState.fields['age'].validate();
+            });
+          },
+          // valueTransformer: (text) => num.tryParse(text),
+          /* validator: FormBuilderValidators.compose([
+             FormBuilderValidators.required(context),
+             FormBuilderValidators.numeric(context),
+             FormBuilderValidators.max(context, 70),
+           ]),*/
+          // initialValue: '12',
+
+          //determine keyboard type according to the question type
+          keyboardType: GeneralUtils.getKeyBoardType(widget.question?.dataType),
+
+          textInputAction: TextInputAction.next,
+        ),
       ),
     );
   }

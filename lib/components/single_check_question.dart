@@ -1,39 +1,44 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_question_answer_widget/flutter_question_answer_widget.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:mediquest_mobile/models/Question.dart';
 
-class SingleChecktQuestion extends StatefulWidget {
-  List<String> _options=[];
-  int _questionNumber;
-  String _question;
+class SingleCheckQuestion extends StatefulWidget {
+  String question;
+  List<String> options;
 
-
-
-  SingleChecktQuestion(this._question,this._options, this._questionNumber);
+  SingleCheckQuestion(Question question) {
+    this.options = question?.options.split(",");
+    this.question = question.questionText;
+  }
 
   @override
-  _SingleChecktQuestionState createState() => _SingleChecktQuestionState();
+  _SingleCheckQuestionState createState() => _SingleCheckQuestionState();
 }
 
-class _SingleChecktQuestionState extends State<SingleChecktQuestion> {
-  String _answer;
-
+class _SingleCheckQuestionState extends State<SingleCheckQuestion> {
   @override
   Widget build(BuildContext context) {
-    final TextStyle display1 = Theme.of(context).textTheme.headline4;
-    return  Container(
-      margin: EdgeInsets.all(20),
-      child: FlutterQuestionAnswerWidget.singleCheckSelection(
-          answered: _answer,
-          question: widget._questionNumber.toString()+". ${widget._question}",
-          questionTextStyle: GoogleFonts.oswald(textStyle: display1,fontSize:17,fontWeight: FontWeight.bold ),
-          answerList:widget._options,
-          onChanged: (String value) {
-            setState(() {
-              _answer = value;
-            });
-          },
-          activeColor: Colors.red),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Container(
+        child: FormBuilderRadioGroup<String>(
+          decoration: InputDecoration(
+            labelText: widget.question,
+          ),
+          name: 'best_language',
+          onChanged: (newValue) {},
+          validator: FormBuilderValidators.compose(
+              [FormBuilderValidators.required(context)]),
+          options: widget.options
+              .map((lang) => FormBuilderFieldOption(
+                    value: lang,
+                    child: Text(lang),
+                  ))
+              .toList(growable: false),
+          controlAffinity: ControlAffinity.trailing,
+        ),
+      ),
     );
   }
 }

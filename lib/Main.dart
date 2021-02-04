@@ -1,14 +1,15 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:mediquest_mobile/screens/dash_board.dart';
-import 'package:mediquest_mobile/test.dart';
-
-import 'screens/complete_form.dart';
-import 'screens/questionaire.dart';
-import 'screens/questionaire_list.dart';
-
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mediquest_mobile/screens/DashBoard.dart';
+import 'package:mediquest_mobile/screens/LoginScreen.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'screens/Questionaire.dart';
+import 'screens/QuestionaireList.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -75,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int _currentIndex = 0;
   PageController _pageController;
+  SharedPreferences prefs;
 
   @override
   void initState() {
@@ -94,8 +97,6 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         elevation: 0.1,
         backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
-
-
       ),
 
       body: SizedBox.expand(
@@ -107,9 +108,8 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             DashBoard(),
             ListPage(title: "Title"),
-            Questionaire(),
-            CompleteForm(),
-
+            QuestionnaireView(),
+            LoginScreen(),
           ],
         ),
       ),

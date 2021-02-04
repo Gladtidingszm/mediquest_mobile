@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mediquest_mobile/utils/general_utils.dart';
-
-
-
-
-
+import 'package:mediquest_mobile/utils/GeneralUtils.dart';
 
 class Submissions extends StatefulWidget {
   @override

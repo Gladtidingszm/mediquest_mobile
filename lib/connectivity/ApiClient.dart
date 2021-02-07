@@ -12,6 +12,14 @@ class ApiClient {
 
   Future<Response> getStudentAssignments(int studentId) async {
     String fullUrl = _baseUrl + "assignment/all/$studentId";
+    print(fullUrl);
+    Future<Response> response = _inner.get(fullUrl, headers: headers);
+    return response;
+  }
+
+  Future<Response> getStudentQuestionnaires() async {
+    String fullUrl = _baseUrl + "questionnaire/all";
+    print(fullUrl);
     Future<Response> response = _inner.get(fullUrl, headers: headers);
     return response;
   }
@@ -24,12 +32,14 @@ class ApiClient {
 
   Future<Response> getAllAssignments() async {
     String fullUrl = _baseUrl + "assignment/all";
+    print(fullUrl);
     Future<Response> response = _inner.get(fullUrl, headers: headers);
     return response;
   }
 
   Future<Response> login(String username, String password) async {
-    String fullUrl = "https://7b57b7b27bc7.ngrok.io/api/student/login";
+    String fullUrl = _baseUrl + "student/login";
+    print(fullUrl);
 
     Future<Response> response = _inner.post(fullUrl, headers: headers, body: {
       "email": username,
@@ -39,31 +49,36 @@ class ApiClient {
   }
 
   Future<Response> getAllQuestions() async {
-    String fullUrl = _baseUrl + "question/all";
+    String fullUrl = _baseUrl + "questions/all";
+    print(fullUrl);
     Future<Response> response = _inner.get(fullUrl, headers: headers);
     return response;
   }
 
   Future<Response> getQuestionnairePatients(int questionnaireId) async {
     String fullUrl = _baseUrl + "questionnaire/patients/$questionnaireId";
+    print(fullUrl);
     Future<Response> response = _inner.get(fullUrl, headers: headers);
     return response;
   }
 
   Future<Response> getAssignmentQuestionnaires(int assignmentId) async {
     String fullUrl = _baseUrl + "questionnaire/assignment-id/$assignmentId";
+    print(fullUrl);
     Future<Response> response = _inner.get(fullUrl, headers: headers);
     return response;
   }
 
   Future<Response> removePatient(int patientId) async {
     String fullUrl = _baseUrl + "questionnaire/remove-patient/$patientId";
+    print(fullUrl);
     Future<Response> response = _inner.get(fullUrl, headers: headers);
     return response;
   }
 
   Future<Response> addPatient(Patient patient) async {
     String fullUrl = _baseUrl + "questionnaire/add-patient";
+    print(fullUrl);
     Map<String, dynamic> patientData = patient.toJson();
 
     _inner
@@ -79,6 +94,7 @@ class ApiClient {
 
   Future<Response> submitPatientResponses(Submission submission) async {
     String fullUrl = _baseUrl + "questionnaire/submit";
+    print(fullUrl);
     Map<String, dynamic> submissionData = submission.toJson();
 
     _inner

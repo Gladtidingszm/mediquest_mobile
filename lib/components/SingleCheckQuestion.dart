@@ -2,14 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:mediquest_mobile/models/Question.dart';
+import 'package:mediquest_mobile/models/SubmissionAnswer.dart';
+import 'package:mediquest_mobile/screens/Questionaire.dart';
+import 'package:provider/provider.dart';
 
 class SingleCheckQuestion extends StatefulWidget {
-  String question;
+  Question question;
   List<String> options;
 
-  SingleCheckQuestion(Question question) {
-    this.options = question?.options.split(",");
-    this.question = question.questionText;
+  SubmissionAnswer answer;
+  String initialValue;
+
+  SingleCheckQuestion(Question question, {this.initialValue}) {
+    this.options = question?.options?.split(",");
+    this.question = question;
+    this.answer =
+        SubmissionAnswer(null, question, null, DateTime.now(), DateTime.now());
   }
 
   @override
@@ -23,11 +31,19 @@ class _SingleCheckQuestionState extends State<SingleCheckQuestion> {
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: Container(
         child: FormBuilderRadioGroup<String>(
+          initialValue: widget.initialValue,
+          enabled: widget.initialValue == null ? true : false,
           decoration: InputDecoration(
-            labelText: widget.question,
+            labelText: widget.question.questionText,
+            labelStyle: TextStyle(fontSize: 18),
           ),
-          name: 'best_language',
+          name: '',
           onChanged: (newValue) {},
+          onSaved: (value) {
+            widget.answer?.response = value.toString();
+            Provider.of<QuestionnaireAnswersProvider>(context)
+                .addAnswer(answer: widget.answer, question: widget.question);
+          },
           validator: FormBuilderValidators.compose(
               [FormBuilderValidators.required(context)]),
           options: widget.options

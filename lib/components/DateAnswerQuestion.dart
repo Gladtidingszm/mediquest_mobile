@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:mediquest_mobile/models/Question.dart';
-import 'package:mediquest_mobile/models/SubmissionAnswer.dart';
 import 'package:mediquest_mobile/screens/Questionaire.dart';
 import 'package:provider/provider.dart';
 
 class DateAnswerQuestion extends StatefulWidget {
   Question question;
-  SubmissionAnswer answer;
   DateTime initialValue;
 
-  DateAnswerQuestion(this.question, {this.initialValue}) {
-    this.answer =
-        SubmissionAnswer(null, question, null, DateTime.now(), DateTime.now());
-  }
+  String answer;
+
+  DateAnswerQuestion(this.question, {this.initialValue}) {}
 
   @override
   _DateAnswerQuestionState createState() => _DateAnswerQuestionState();
@@ -36,9 +33,10 @@ class _DateAnswerQuestionState extends State<DateAnswerQuestion> {
           initialTime: null,
           pickerType: PickerType.material,
           onSaved: (newValue) {
-            widget.answer?.response = newValue.toString();
+            widget.answer = newValue.toString();
             Provider.of<QuestionnaireAnswersProvider>(context, listen: false)
-                .addAnswer(answer: widget.answer, question: widget.question);
+                .addAnswer(
+                    response: widget.answer, questionId: widget.question.id);
           },
         ),
       ),

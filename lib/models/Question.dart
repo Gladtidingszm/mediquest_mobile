@@ -1,40 +1,52 @@
-import 'package:json_annotation/json_annotation.dart';
-import 'package:mediquest_mobile/models/Institution.dart';
-
-part 'Question.g.dart';
-@JsonSerializable(explicitToJson: true)
 class Question {
   int id;
   String questionText;
   String options;
-  @JsonKey(name: "is_option_text")
-  bool isOpenText;
-  @JsonKey(name: "is_multiple_selection")
-  bool isMultipleSelection;
-  @JsonKey(name: "selection_limit")
+  int isOpenText;
+  int isMultipleSelection;
   int selectionLimit;
-  @JsonKey(name: "answer_data_type")
-  String dataType;
-  Institution institution;
-  @JsonKey(name: "created_at")
-  DateTime createdAt;
-
-  @JsonKey(name: "updated_at")
-  DateTime updatedAt;
+  String answerDatatype;
+  int institutionId;
+  String createdAt;
+  String updatedAt;
 
   Question(
-      this.id,
+      {this.id,
       this.questionText,
       this.options,
       this.isOpenText,
       this.isMultipleSelection,
       this.selectionLimit,
-      this.dataType,
-      this.institution,
+      this.answerDatatype,
+      this.institutionId,
       this.createdAt,
-      this.updatedAt);
-  factory Question.fromJson(Map<String, dynamic> json) =>
-      _$QuestionFromJson(json);
+      this.updatedAt});
 
-  Map<String, dynamic> toJson() => _$QuestionToJson(this);
+  Question.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    questionText = json['question_text'];
+    options = json['options'];
+    isOpenText = json['is_open_text'];
+    isMultipleSelection = json['is_multiple_selection'];
+    selectionLimit = json['selection_limit'];
+    answerDatatype = json['answer_datatype'];
+    institutionId = json['institution_id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['question_text'] = this.questionText;
+    data['options'] = this.options;
+    data['is_open_text'] = this.isOpenText;
+    data['is_multiple_selection'] = this.isMultipleSelection;
+    data['selection_limit'] = this.selectionLimit;
+    data['answer_datatype'] = this.answerDatatype;
+    data['institution_id'] = this.institutionId;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    return data;
+  }
 }

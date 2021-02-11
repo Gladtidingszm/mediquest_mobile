@@ -1,38 +1,52 @@
-import 'package:json_annotation/json_annotation.dart';
-import 'package:mediquest_mobile/models/Assignment.dart';
-import 'package:mediquest_mobile/models/Institution.dart';
-
-part 'Questionnaire.g.dart';
-
-@JsonSerializable(explicitToJson: true)
 class Questionnaire {
   int id;
-  Assignment assignment;
+  int assignmentId;
+  String institution;
   String department;
   String mentor;
-  @JsonKey(name: "interview_date")
-  DateTime interviewDate;
-  @JsonKey(name: "start_of_rotation")
-  DateTime startOfRotation;
-  Institution institution;
-  @JsonKey(name: "created_at")
-  DateTime createdAt;
-  @JsonKey(name: "updated_at")
-  DateTime updatedAt;
+  String interviewDate;
+  String startOfRotation;
+  int institutionId;
+  String createdAt;
+  String updatedAt;
 
   Questionnaire(
-      this.id,
-      this.assignment,
+      {this.id,
+      this.assignmentId,
+      this.institution,
       this.department,
       this.mentor,
       this.interviewDate,
       this.startOfRotation,
-      this.institution,
+      this.institutionId,
       this.createdAt,
-      this.updatedAt);
+      this.updatedAt});
 
-  factory Questionnaire.fromJson(Map<String, dynamic> json) =>
-      _$QuestionnaireFromJson(json);
+  Questionnaire.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    assignmentId = json['assignment_id'];
+    institution = json['institution'];
+    department = json['department'];
+    mentor = json['mentor'];
+    interviewDate = json['interview_date'];
+    startOfRotation = json['start_of_rotation'];
+    institutionId = json['institution_id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+  }
 
-  Map<String, dynamic> toJson() => _$QuestionnaireToJson(this);
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['assignment_id'] = this.assignmentId;
+    data['institution'] = this.institution;
+    data['department'] = this.department;
+    data['mentor'] = this.mentor;
+    data['interview_date'] = this.interviewDate;
+    data['start_of_rotation'] = this.startOfRotation;
+    data['institution_id'] = this.institutionId;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    return data;
+  }
 }

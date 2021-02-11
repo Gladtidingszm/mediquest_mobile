@@ -239,6 +239,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.8"
+  edge_alert:
+    dependency: "direct main"
+    description:
+      name: edge_alert
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   fake_async:
     dependency: transitive
     description:
@@ -511,6 +518,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.4.1"
+  loading_dialog:
+    dependency: "direct main"
+    description:
+      name: loading_dialog
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1+1"
   logging:
     dependency: transitive
     description:

@@ -4,14 +4,15 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mediquest_mobile/screens/DashBoard.dart';
 import 'package:mediquest_mobile/screens/LoginScreen.dart';
-import 'package:provider/provider.dart';
+import 'package:mediquest_mobile/screens/SubmissionProfile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'screens/Questionaire.dart';
 import 'screens/QuestionaireList.dart';
+import 'utils/SharedPreferncesUtil.dart';
 
-void main() {
+void main() async {
   runApp(MyApp());
+  await SharedPreferencesUtil.initSharedPreferences();
 }
 
 class MyApp extends StatelessWidget {
@@ -108,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             DashBoard(),
             ListPage(title: "Title"),
-            QuestionnaireView(),
+            SubmissionProfile(),
             LoginScreen(),
           ],
         ),

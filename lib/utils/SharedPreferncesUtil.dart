@@ -10,23 +10,24 @@ class SharedPreferencesUtil {
   static Future initSharedPreferences() async {
     print("getting shared preferences");
     _preferences = await SharedPreferences.getInstance();
+    print("gotten shared preferences ");
   }
 
   static void setCurrentStudent(Student student) {
     _preferences.setString("student", jsonEncode(student));
   }
 
-  static Future<Student> getStudent() async {
+  static Student getStudent() {
     String studentJson = _preferences.getString("student");
     Student student = Student.fromJson(jsonDecode(studentJson));
     return student;
   }
 
-  static void setAuthToken({@required String token}) async {
+  static void setAuthToken({@required String token}) {
     _preferences.setString('userToken', token);
   }
 
-  static Future<String> getAuthToken() async {
+  static String getAuthToken() {
     String result = _preferences.getString('userToken');
     return result;
   }

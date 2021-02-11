@@ -106,38 +106,38 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
               ),
             );
             /*Card(
-              elevation: 2,
-              child: Column(
-                children: <Widget>[
-                  Divider(
-                    height: 12.0,
-                  ),
-                  ListTile(
-                    leading: CircleAvatar(
-                      radius: 24.0,
-                      backgroundColor: getRandomColor(),
+                elevation: 2,
+                child: Column(
+                  children: <Widget>[
+                    Divider(
+                      height: 12.0,
                     ),
-                    title: Row(
-                      children: <Widget>[
-                        Text(_model.name),
-                        SizedBox(
-                          width: 16.0,
-                        ),
-                        Text(
-                          _model.datetime,
-                          style: TextStyle(fontSize: 12.0),
-                        ),
-                      ],
+                    ListTile(
+                      leading: CircleAvatar(
+                        radius: 24.0,
+                        backgroundColor: getRandomColor(),
+                      ),
+                      title: Row(
+                        children: <Widget>[
+                          Text(_model.name),
+                          SizedBox(
+                            width: 16.0,
+                          ),
+                          Text(
+                            _model.datetime,
+                            style: TextStyle(fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                      subtitle: Text(_model.summary),
+                      trailing: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 14.0,
+                      ),
                     ),
-                    subtitle: Text(_model.summary),
-                    trailing: Icon(
-                      Icons.arrow_forward_ios,
-                      size: 14.0,
-                    ),
-                  ),
-                ],
-              ),
-            );*/
+                  ],
+                ),
+              );*/
           },
         ),
       ),

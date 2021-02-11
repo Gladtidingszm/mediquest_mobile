@@ -1,12 +1,17 @@
 import 'package:cool_alert/cool_alert.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
+import 'package:mediquest_mobile/managers/QuestionnaireManager.dart';
 import 'package:mediquest_mobile/models/Patient.dart';
+import 'package:mediquest_mobile/models/Questionnaire.dart';
 import 'package:mediquest_mobile/screens/CreatePatient.dart';
 import 'package:mediquest_mobile/screens/Questionaire.dart';
-import 'package:mediquest_mobile/utils/DummyData.dart';
 
 class PatientListScreen extends StatefulWidget {
+  Questionnaire questionnaire;
+
+  PatientListScreen(this.questionnaire);
+
   @override
   _PatientListScreenState createState() => _PatientListScreenState();
 }
@@ -32,39 +37,73 @@ class _PatientListScreenState extends State<PatientListScreen>
           ],
         ),
       ),
-      body: Container(
-        child: ListView.builder(
-          itemCount: 20,
-          itemBuilder: (context, index) {
-            Patient _model = DummyData.patient;
-            return Card(
-              child: ExpansionTile(
-                title: Text(
-                  _model.initials,
-                  style: TextStyle(fontSize: 13.0, fontWeight: FontWeight.bold),
-                ),
-                children: <Widget>[
-                  ListTile(
-                    title: SizedBox(
-                      height: 50,
-                      width: 350,
-                      child: SingleChildScrollView(
-                        child: FlatButton(
-                          child: Text("Take the questionnaire"),
-                          onPressed: () {
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (context) {
-                              return SafeArea(child: QuestionnaireView());
-                            }));
-                          },
-                        ),
-                      ),
+      body: SingleChildScrollView(
+        child: FutureBuilder(
+          builder: (context, AsyncSnapshot snap) {
+            switch (snap.connectionState) {
+              case ConnectionState.none:
+                return Center(child: Text("No internet,  Please try later"));
+                break;
+              case ConnectionState.waiting:
+                return Center(child: CircularProgressIndicator());
+                break;
+              case ConnectionState.active:
+                return Center(child: Text("active"));
+                break;
+              case ConnectionState.done:
+                if (snap.hasData && snap.data.length != 0) {
+                  return SingleChildScrollView(
+                    child: ListView.builder(
+                      itemCount: snap.data.length,
+                      primary: false,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        Patient patient = snap.data[index];
+
+                        return Card(
+                          child: ExpansionTile(
+                            title: Text(
+                              patient.initials,
+                              style: TextStyle(
+                                  fontSize: 13.0, fontWeight: FontWeight.bold),
+                            ),
+                            children: <Widget>[
+                              ListTile(
+                                title: SizedBox(
+                                  height: 50,
+                                  width: 350,
+                                  child: SingleChildScrollView(
+                                    child: FlatButton(
+                                      child: Text("Take the questionnaire"),
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                          return QuestionnaireView(patient);
+                                        }));
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                ],
-              ),
-            );
+                  );
+                } else {
+                  return Container(
+                    child: Center(
+                      child: Text("Oops,  No data,Check You Have Internet"),
+                    ),
+                  );
+                }
+                break;
+            }
+            return Container();
           },
+          future: getQuestionnairePatients(widget.questionnaire.id),
         ),
       ),
       floatingActionButton: FloatingActionBubble(
@@ -174,5 +213,19 @@ class _PatientListScreenState extends State<PatientListScreen>
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
 
     super.initState();
+  }
+}
+
+Future<List<Patient>> getQuestionnairePatients(int patientId) async {
+  print("getting patients");
+  List<Patient> patients = List();
+
+  patients = await QuestionnaireManager().getQuestionnairePatients(patientId);
+
+  if (patients != null && patients.isNotEmpty) {
+    print("on data return patients list not empty");
+    return patients;
+  } else {
+    print(" on data return patients  list empty ");
   }
 }

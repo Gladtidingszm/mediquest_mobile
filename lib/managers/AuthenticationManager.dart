@@ -5,6 +5,7 @@ import 'package:mediquest_mobile/connectivity/ApiClient.dart';
 import 'package:mediquest_mobile/payload/ApiPayload.dart';
 import 'package:mediquest_mobile/payload/AuthenticationPayload.dart';
 import 'package:mediquest_mobile/utils/GeneralUtils.dart';
+import 'package:mediquest_mobile/utils/SharedPreferncesUtil.dart';
 
 class AuthenticationManager {
   Future<AuthenticationPayload> login(String username, String password) async {
@@ -26,9 +27,20 @@ class AuthenticationManager {
         print("converting");
         print(payload.toJson());
         authenticationPayload = AuthenticationPayload.fromJson(payload.payload);
+        print(
+            "***************************************************************************");
+
+        print(authenticationPayload?.accessToken);
+
+        print(
+            "***************************************************************************");
 
         if (authenticationPayload != null) {
           print("login  not null ");
+          SharedPreferencesUtil.setAuthToken(
+              token: authenticationPayload?.accessToken);
+          SharedPreferencesUtil.setCurrentStudent(
+              authenticationPayload.student);
         } else {
           print("login null ");
         }

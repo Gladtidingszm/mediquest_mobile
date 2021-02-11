@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mediquest_mobile/components/questionaire_list_item.dart';
+import 'package:mediquest_mobile/components/QuestionaireListItem.dart';
 import 'package:mediquest_mobile/models/Lesson.dart';
 
 class ListPage extends StatefulWidget {

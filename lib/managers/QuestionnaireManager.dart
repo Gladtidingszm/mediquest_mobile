@@ -5,7 +5,6 @@ import 'package:mediquest_mobile/connectivity/ApiClient.dart';
 import 'package:mediquest_mobile/models/Patient.dart';
 import 'package:mediquest_mobile/models/Question.dart';
 import 'package:mediquest_mobile/models/Questionnaire.dart';
-import 'package:mediquest_mobile/models/Submission.dart';
 import 'package:mediquest_mobile/payload/ApiPayload.dart';
 import 'package:mediquest_mobile/utils/GeneralUtils.dart';
 
@@ -49,10 +48,91 @@ class QuestionnaireManager {
     return questionnaires;
   }
 
+  Future<List<Questionnaire>> getStudentQuestionnaires() async {
+    List<Questionnaire> questionnaires = List();
+    Response response = await ApiClient.client.getStudentQuestionnaires();
+
+    if (response != null &&
+        response.body != null &&
+        GeneralUtils.isSuccess(response.statusCode)) {
+      //decode the data
+      print("decoding");
+      Map<String, dynamic> data;
+      ApiPayload payload;
+
+      try {
+        print(response.body.toString());
+        data = jsonDecode(response.body.toString());
+
+        payload = ApiPayload.fromJson(data);
+      } catch (e) {
+        print(e.toString());
+      }
+
+      if (payload.success) {
+        //convert
+        print("converting");
+
+        questionnaires = payload.payload
+            .map<Questionnaire>((json) => Questionnaire.fromJson(json))
+            .toList();
+        print("length: " + questionnaires.length.toString());
+      } else {
+        print("payload failed:  " + payload.message);
+      }
+    } else {
+      print((response.statusCode));
+    }
+    return questionnaires;
+  }
+
+  Future<List<Patient>> getQuestionnairePatients(int questionnaireId) async {
+    List<Patient> patients = List();
+    Response response =
+        await ApiClient.client.getQuestionnairePatients(questionnaireId);
+
+    if (response != null &&
+        response.body != null &&
+        GeneralUtils.isSuccess(response.statusCode)) {
+      //decode the data
+      print("decoding");
+      Map<String, dynamic> data;
+      ApiPayload payload;
+
+      try {
+        data = jsonDecode(response.body.toString());
+
+        payload = ApiPayload.fromJson(data);
+      } catch (e) {
+        print(e.toString());
+      }
+
+      if (payload.success) {
+        //convert
+        print("converting");
+        print(payload.payload);
+        try {
+          patients = payload.payload["result"]
+              .map<Patient>((json) => Patient.fromJson(json))
+              .toList();
+        } catch (e) {
+          print(e);
+        }
+        print("length: " + patients.length.toString());
+      } else {
+        print("payload failed:  " + payload.message);
+      }
+    } else {
+      print((response.statusCode));
+    }
+    return patients;
+  }
+
   Future<Patient> addPatient(Patient patient) async {
     print("creating patient");
 
     Response response = await ApiClient().addPatient(patient);
+    print("after response" + response.statusCode.toString());
 
     if (response != null &&
         response.body != null &&
@@ -64,27 +144,28 @@ class QuestionnaireManager {
       if (payload.success) {
         print("payload success");
         print("converting");
-        patient = Patient.fromJson(payload.payload);
+        print(payload.payload);
 
         if (patient != null) {
           print("patient not null  ");
+          return patient;
         } else {
           print("patient null ");
+          return null;
         }
       } else {
         print("payload failed:  " + payload.message);
       }
     } else {
-      print("null  response");
+      print("null  response" + response.statusCode.toString());
     }
-    return patient;
   }
 
   Future<Patient> removePatient(int patientId) async {
     print("removing patient");
 
     Response response = await ApiClient().removePatient(patientId);
-    Patient patient = null;
+    Patient patient;
 
     if (response != null &&
         response.body != null &&
@@ -112,12 +193,47 @@ class QuestionnaireManager {
     return patient;
   }
 
-  Future<Submission> submitPatientResponses(
-    Submission submission,
+  Future<Questionnaire> clearQuestionnairePatients(int questionnaireID) async {
+    print("clearing patients");
+
+    Response response =
+        await ApiClient().clearQuestionnairePatients(questionnaireID);
+    Questionnaire questionnaire;
+
+    if (response != null &&
+        response.body != null &&
+        GeneralUtils.isSuccess(response.statusCode)) {
+      //decode the data
+      print("decoding  ");
+      Map<String, dynamic> data = jsonDecode(response.body.toString());
+      ApiPayload payload = ApiPayload.fromJson(data);
+      if (payload.success) {
+        print("payload success");
+        print("converting");
+        questionnaire = Questionnaire.fromJson(payload.payload);
+
+        if (questionnaire != null) {
+          print("questionnaire not null  ");
+        } else {
+          print("questionnaire null ");
+        }
+      } else {
+        print("payload failed:  " + payload.message);
+      }
+    } else {
+      print("null  response");
+    }
+    return questionnaire;
+  }
+
+  /*Future<List<SubmissionAnswer>> submitPatientResponses(
+      List<Answer> answers,submissionId
   ) async {
     print("submitting responses");
+   SubmissionRequestBody submission=SubmissionRequestBody(submissionId: submissionId,answers: answers);
+   List<SubmissionAnswer> submissionAnswers=List();
 
-    Response response = await ApiClient().submitPatientResponses(submission);
+    Response response = await ApiClient().submitPatientResponses(submission:submission);
 
     if (response != null &&
         response.body != null &&
@@ -129,21 +245,34 @@ class QuestionnaireManager {
       if (payload.success) {
         print("payload success");
         print("converting");
-        submission = payload.payload["submission"].fromJson(json);
 
-        if (submission != null) {
-          print("submission  not null ");
-        } else {
-          print("submission null ");
+        print("this:   "+payload.payload.toString());
+        try {
+          submissionAnswers=payload.payload.map<SubmissionAnswer>((json) => SubmissionAnswer.fromJson(json))
+                  .toList();
+          if(submissionAnswers!=null&&submissionAnswers.length!=0){
+                print("submission answers not null");
+
+                 submissionAnswers.forEach((element) {
+                   print("********************************");
+                   print(element.toJson());
+                   print("********************************");
+                 });
+
+              }
+        } catch (e) {
+          print(e);
         }
+
+
       } else {
         print("payload failed:  " + payload.message);
       }
     } else {
       print("null  response");
     }
-    return submission;
-  }
+    return submissionAnswers;
+  }*/
 
   Future<List<Question>> getAllQuestions() async {
     List<Question> questions = List();

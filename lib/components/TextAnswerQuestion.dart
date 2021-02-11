@@ -1,56 +1,44 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:mediquest_mobile/models/Question.dart';
 import 'package:mediquest_mobile/screens/Questionaire.dart';
 import 'package:provider/provider.dart';
 
-class SingleCheckQuestion extends StatefulWidget {
+class TextAnswerQuestion extends StatefulWidget {
   Question question;
-  List<String> options;
 
   String answer;
   String initialValue;
 
-  SingleCheckQuestion(Question question, {this.initialValue}) {
-    this.options = question?.options?.split(",");
+  TextAnswerQuestion(Question question, {this.initialValue = null}) {
     this.question = question;
   }
 
   @override
-  _SingleCheckQuestionState createState() => _SingleCheckQuestionState();
+  _TextAnswerQuestionState createState() => _TextAnswerQuestionState();
 }
 
-class _SingleCheckQuestionState extends State<SingleCheckQuestion> {
+class _TextAnswerQuestionState extends State<TextAnswerQuestion> {
   @override
   Widget build(BuildContext context) {
+    print(widget.question.toJson());
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: Container(
-        child: FormBuilderRadioGroup<String>(
+        child: TextFormField(
           initialValue: widget.initialValue,
           enabled: widget.initialValue == null ? true : false,
+          keyboardType: TextInputType.text,
           decoration: InputDecoration(
             labelText: widget.question.questionText,
-            labelStyle: TextStyle(fontSize: 18),
           ),
-          name: '',
-          onChanged: (newValue) {},
           onSaved: (value) {
             widget.answer = value.toString();
             Provider.of<QuestionnaireAnswersProvider>(context, listen: false)
                 .addAnswer(
                     response: widget.answer, questionId: widget.question.id);
           },
-          validator: FormBuilderValidators.compose(
-              [FormBuilderValidators.required(context)]),
-          options: widget.options
-              .map((lang) => FormBuilderFieldOption(
-                    value: lang,
-                    child: Text(lang),
-                  ))
-              .toList(growable: false),
-          controlAffinity: ControlAffinity.trailing,
+          validator: (value) =>
+              value.trim().isEmpty ? 'This answer can\'t be empty' : null,
         ),
       ),
     );

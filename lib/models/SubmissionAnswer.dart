@@ -1,25 +1,43 @@
-import 'package:json_annotation/json_annotation.dart';
-
 import 'Question.dart';
-import 'Submission.dart';
 
-part 'SubmissionAnswer.g.dart';
-
-@JsonSerializable(explicitToJson: true)
 class SubmissionAnswer {
+  int submissionId;
   String response;
+  String updatedAt;
+  String createdAt;
+  int id;
   Question question;
-  Submission submission;
-  @JsonKey(name: "created_at")
-  DateTime createdAt;
-  @JsonKey(name: "updated_at")
-  DateTime updatedAt;
 
-  SubmissionAnswer(this.response, this.question, this.submission,
-      this.createdAt, this.updatedAt);
+  SubmissionAnswer(
+      {this.submissionId,
+      this.response,
+      this.updatedAt,
+      this.createdAt,
+      this.id,
+      this.question});
 
-  factory SubmissionAnswer.fromJson(Map<String, dynamic> json) =>
-      _$SubmissionAnswerFromJson(json);
+  SubmissionAnswer.fromJson(Map<String, dynamic> json) {
+    submissionId = json['submission_id'];
+    response = json['response'];
+    updatedAt = json['updated_at'];
+    createdAt = json['created_at'];
+    id = json['id'];
+    question = json['question'] != null
+        ? new Question.fromJson(json['question'])
+        : null;
+  }
 
-  Map<String, dynamic> toJson() => _$SubmissionAnswerToJson(this);
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['submission_id'] = this.submissionId;
+    data['response'] = this.response;
+    data['updated_at'] = this.updatedAt;
+    data['created_at'] = this.createdAt;
+    data['id'] = this.id;
+    if (this.question != null) {
+      data['question'] = this.question.toJson();
+    }
+    return data;
+  }
 }
+

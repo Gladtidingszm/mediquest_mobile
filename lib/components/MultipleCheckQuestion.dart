@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:mediquest_mobile/models/Question.dart';
-import 'package:mediquest_mobile/models/SubmissionAnswer.dart';
 import 'package:mediquest_mobile/screens/Questionaire.dart';
 import 'package:provider/provider.dart';
 
@@ -9,15 +8,13 @@ import 'package:provider/provider.dart';
 class MultipleSelectQuestion extends StatefulWidget {
   List<String> options;
 
-  SubmissionAnswer answer;
+  String answer;
   List<String> initialValue;
 
   MultipleSelectQuestion(Question question, {this.initialValue}) {
     this.question = question;
     this.options = question?.options?.split(",");
     this.maxSelect = question.selectionLimit;
-    this.answer =
-        SubmissionAnswer(null, question, null, DateTime.now(), DateTime.now());
   }
 
   Question question;
@@ -50,10 +47,14 @@ class _MultipleSelectQuestionState extends State<MultipleSelectQuestion> {
           enabled: widget.initialValue == null ? true : false,
           name: ' ',
           options: optionsView,
+          validator: (value) => value == null || value.length == 0
+              ? 'This answer can\'t be empty'
+              : null,
           onSaved: (newValue) {
-            widget.answer?.response = newValue.toString();
+            widget.answer = newValue.join(",");
             Provider.of<QuestionnaireAnswersProvider>(context, listen: false)
-                .addAnswer(answer: widget.answer, question: widget.question);
+                .addAnswer(
+                    response: widget.answer, questionId: widget.question.id);
           },
           separator: const VerticalDivider(
             width: 10,

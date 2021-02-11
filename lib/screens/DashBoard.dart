@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sparkline/flutter_sparkline.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:mediquest_mobile/constants/AppRoutes.dart';
+import 'package:mediquest_mobile/utils/AppNavigator.dart';
 
-
-
-
-
-
-
-
-class DashBoard extends StatefulWidget
-{
+class DashBoard extends StatefulWidget {
   @override
   _DashBoardState createState() => _DashBoardState();
 }
@@ -88,17 +82,15 @@ class _DashBoardState extends State<DashBoard>
                           borderRadius: BorderRadius.circular(24.0),
                           child: Center
                             (
-                              child: Padding
-                                (
-                                padding: const EdgeInsets.all(16.0),
-                                child: Icon(Icons.timeline, color: Colors.white, size: 30.0),
-                              )
-                          )
-                      )
-                    ]
-                ),
-              ),
-            ),
+                                child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Icon(Icons.timeline,
+                                  color: Colors.white, size: 30.0),
+                            )))
+                      ]),
+                ), onTap: () {
+              AppNavigator.navigateTo(AppRoute.SUBMISSIONS, context);
+            }),
             _buildTile(
               Padding(
                 padding: const EdgeInsets.all(24.0),

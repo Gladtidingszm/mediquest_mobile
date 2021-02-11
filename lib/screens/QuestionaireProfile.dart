@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:mediquest_mobile/models/Lesson.dart';
+import 'package:mediquest_mobile/models/Questionnaire.dart';
 
 import 'PatientListScreen.dart';
 
 class DetailPage extends StatelessWidget {
-  final Lesson lesson;
-  DetailPage({Key key, this.lesson}) : super(key: key);
+  final Questionnaire questionnaire;
+
+  DetailPage(this.questionnaire);
+
   @override
   Widget build(BuildContext context) {
     final levelIndicator = Container(
       child: Container(
         child: LinearProgressIndicator(
             backgroundColor: Color.fromRGBO(209, 224, 224, 0.2),
-            value: lesson.indicatorValue,
+            value: 20,
             valueColor: AlwaysStoppedAnimation(Colors.green)),
       ),
     );
@@ -24,7 +26,7 @@ class DetailPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(5.0)),
       child:  Expanded(
         child: Text(
-          "B. Eng",
+          "Assignment no: " + questionnaire.assignmentId.toString(),
           style: TextStyle(color: Colors.white),
         ),
       ),
@@ -45,9 +47,8 @@ class DetailPage extends StatelessWidget {
         ),
         SizedBox(height: 10.0),
         Text(
-          lesson.title,
+          "Title",
           style: TextStyle(color: Colors.white, fontSize: 32.0),
-
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -62,7 +63,7 @@ class DetailPage extends StatelessWidget {
                 child: Padding(
                     padding: EdgeInsets.only(left: 5.0),
                     child: Text(
-                      lesson.level,
+                      "Level",
                       style: TextStyle(color: Colors.white),
                     ))),
             Expanded( child: levelIndicator),
@@ -101,7 +102,7 @@ class DetailPage extends StatelessWidget {
     );
 
     final bottomContentText = Text(
-      lesson.content,
+      "Here Also",
       style: TextStyle(fontSize: 18.0),
     );
     final readButton = Container(
@@ -116,7 +117,7 @@ class DetailPage extends StatelessWidget {
                     .push(MaterialPageRoute(builder: (context) {
                   return Scaffold(
                       body: Container(
-                    child: PatientListScreen(),
+                        child: PatientListScreen(questionnaire),
                   ));
                 }))
               },

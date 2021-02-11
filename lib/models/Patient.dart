@@ -1,30 +1,59 @@
-import 'package:json_annotation/json_annotation.dart';
-import 'package:mediquest_mobile/models/Institution.dart';
+import 'Submission.dart';
 
-import 'Questionnaire.dart';
-
-part 'Patient.g.dart';
-
-@JsonSerializable(explicitToJson: true)
 class Patient {
   int id;
-  Questionnaire questionnaire;
+  int questionnaireId;
   String initials;
-  DateTime dob;
   int age;
   String sex;
-  Institution institution;
+  String dob;
+  int institutionId;
+  String createdAt;
+  String updatedAt;
+  Submission submission;
 
-  Patient(this.id, this.questionnaire, this.initials, this.dob, this.age,
-      this.sex, this.institution, this.createdAt, this.updatedAt);
+  Patient(
+      {this.id,
+      this.questionnaireId,
+      this.initials,
+      this.age,
+      this.sex,
+      this.dob,
+      this.institutionId,
+      this.createdAt,
+      this.updatedAt,
+      this.submission});
 
-  @JsonKey(name: "created_at")
-  DateTime createdAt;
-  @JsonKey(name: "updated_at")
-  DateTime updatedAt;
+  Patient.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    questionnaireId = json['questionnaire_id'];
+    initials = json['initials'];
+    age = json['age'];
+    sex = json['sex'];
+    dob = json['dob'];
+    institutionId = json['institution_id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    submission = json['submission'] != null
+        ? new Submission.fromJson(json['submission'])
+        : null;
+  }
 
-  factory Patient.fromJson(Map<String, dynamic> json) =>
-      _$PatientFromJson(json);
-
-  Map<String, dynamic> toJson() => _$PatientToJson(this);
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['questionnaire_id'] = this.questionnaireId;
+    data['initials'] = this.initials;
+    data['age'] = this.age;
+    data['sex'] = this.sex;
+    data['dob'] = this.dob;
+    data['institution_id'] = this.institutionId;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    if (this.submission != null) {
+      data['submission'] = this.submission.toJson();
+    }
+    return data;
+  }
 }
+

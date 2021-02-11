@@ -1,10 +1,10 @@
+import 'package:edge_alert/edge_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:loading_dialog/loading_dialog.dart';
 import 'package:mediquest_mobile/managers/QuestionnaireManager.dart';
 import 'package:mediquest_mobile/models/Patient.dart';
-import 'package:mediquest_mobile/utils/DummyData.dart';
 
 // so we're create a normal startup of a flutter application here
 // so in our MyHomePage is where we're going to be working
@@ -98,7 +98,7 @@ class _CreatePatientState extends State<CreatePatient> {
                               labelText: 'Age',
                               icon: Icon(Icons.accessibility),
                             ),
-                            onSaved: (value) => _sex = value,
+                            onSaved: (value) => age = int.parse(value),
                             validator: (value) =>
                                 value.isEmpty ? 'Age can\'t be empty' : null,
                           ),
@@ -131,25 +131,20 @@ class _CreatePatientState extends State<CreatePatient> {
                                     if (_formKey.currentState.validate()) {
                                       _formKey.currentState.save();
                                       print(_formKey.currentState);
+                                      Patient patient = Patient(
+                                        updatedAt: DateTime.now().toString(),
+                                        sex: _sex,
+                                        questionnaireId: 1,
+                                        age: age,
+                                        dob: dateOfBirth.toString(),
+                                        createdAt: DateTime.now().toString(),
+                                        initials: _initials,
+                                        institutionId: 1,
+                                      );
 
-                                      LoadingDialog loading = LoadingDialog(
-                                          buildContext: context,
-                                          loadingMessage: "Creating ");
-                                      loading.show();
-                                      Patient patient =
-                                          await QuestionnaireManager()
-                                              .addPatient(Patient(
-                                                  1,
-                                                  DummyData.questionaire,
-                                                  "OK",
-                                                  DateTime.now(),
-                                                  age,
-                                                  _sex,
-                                                  DummyData.institution,
-                                                  DateTime.now(),
-                                                  DateTime.now()));
-                                      print(patient.toJson());
-                                      loading.hide();
+                                      Patient newPatient =
+                                          await addPatient(patient, context);
+                                      print(newPatient?.toJson());
                                     } else {
                                       print(_formKey.currentState);
                                       print('validation failed');
@@ -186,12 +181,6 @@ class _CreatePatientState extends State<CreatePatient> {
     );
   }
 
-  showandhide() {
-    setState(() {
-      hidePass = !hidePass;
-    });
-  }
-
 /*  void _showInSnackBar({String message}) {
     _formKey.currentState.showSnackBar(
       SnackBar(
@@ -218,4 +207,31 @@ class _CreatePatientState extends State<CreatePatient> {
   void dispose() {
     super.dispose();
   }
+}
+
+Future<Patient> addPatient(Patient patientData, BuildContext context) async {
+  LoadingDialog loadingDialog =
+      LoadingDialog(buildContext: context, loadingMessage: "Creating...");
+  loadingDialog.show();
+
+  Patient patient = await QuestionnaireManager().addPatient(patientData);
+  loadingDialog.hide();
+  if (patient != null) {
+    EdgeAlert.show(context,
+        title: 'Success',
+        description: 'Patient Created.',
+        icon: Icons.check_circle_outline,
+        backgroundColor: Colors.green,
+        gravity: EdgeAlert.TOP);
+  } else {
+    {
+      EdgeAlert.show(context,
+          title: 'Failure',
+          description: 'Failed to create patient.',
+          icon: Icons.dangerous,
+          backgroundColor: Colors.red,
+          gravity: EdgeAlert.TOP);
+    }
+  }
+  return patient;
 }

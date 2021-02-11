@@ -4,28 +4,27 @@ import 'package:flutter_login/flutter_login.dart';
 import 'package:mediquest_mobile/Main.dart';
 import 'package:mediquest_mobile/managers/AuthenticationManager.dart';
 import 'package:mediquest_mobile/payload/AuthenticationPayload.dart';
-
-
+import 'package:mediquest_mobile/utils/SharedPreferncesUtil.dart';
 
 class LoginScreen extends StatelessWidget {
   static const routeName = '/auth';
 
   Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
 
-  Future<String> _loginUser(LoginData data) async{
-    AuthenticationPayload authenticationPayload=await AuthenticationManager().login(data.name, data.password);
+  Future<String> _loginUser(LoginData data) async {
+    AuthenticationPayload authenticationPayload =
+        await AuthenticationManager().login(data.name, data.password);
     print("done");
     print(authenticationPayload.student.toJson());
-
-
+    SharedPreferencesUtil.setCurrentStudent(authenticationPayload.student);
+    SharedPreferencesUtil.setAuthToken(
+        token: authenticationPayload.accessToken);
+    print("auth token stored as:   " + SharedPreferencesUtil.getAuthToken());
   }
 
   Future<String> _recoverPassword(String name) {
     return Future.delayed(loginTime).then((_) {
-
         return 'Okay';
-
-
     });
   }
 

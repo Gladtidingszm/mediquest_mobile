@@ -39,5 +39,10 @@ class SubmissionAnswer {
     }
     return data;
   }
+
+  @override
+  String toString() {
+    return 'SubmissionAnswer{submissionId: $submissionId, response: $response, updatedAt: $updatedAt, createdAt: $createdAt, id: $id, question: $question}';
+  }
 }
 

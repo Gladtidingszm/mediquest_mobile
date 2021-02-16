@@ -1,12 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mediquest_mobile/models/Questionnaire.dart';
-
-import 'PatientListScreen.dart';
+import 'package:mediquest_mobile/models/Assignment.dart';
+import 'package:mediquest_mobile/screens/QuestionaireList.dart';
+import 'package:mediquest_mobile/utils/GUIUtils.dart';
 
 class DetailPage extends StatelessWidget {
-  final Questionnaire questionnaire;
+  final Assignment assignment;
 
-  DetailPage(this.questionnaire);
+  DetailPage(this.assignment);
 
   @override
   Widget build(BuildContext context) {
@@ -19,18 +20,6 @@ class DetailPage extends StatelessWidget {
       ),
     );
 
-    final program = Container(
-      margin: const EdgeInsets.all(5.0),
-      decoration: new BoxDecoration(
-
-          borderRadius: BorderRadius.circular(5.0)),
-      child:  Expanded(
-        child: Text(
-          "Assignment no: " + questionnaire.assignmentId.toString(),
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
-    );
 
     final topContentText = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,38 +36,38 @@ class DetailPage extends StatelessWidget {
         ),
         SizedBox(height: 10.0),
         Text(
-          "Title",
+          "Assignment ${assignment.assignmentNumber}",
           style: TextStyle(color: Colors.white, fontSize: 32.0),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        program,
-        SizedBox(height: 30.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-
-            Expanded(
-
-                child: Padding(
-                    padding: EdgeInsets.only(left: 5.0),
-                    child: Text(
-                      "Level",
-                      style: TextStyle(color: Colors.white),
-                    ))),
-            Expanded( child: levelIndicator),
-
-          ],
-        ),
+        spacedDivider,
+        Text.rich(TextSpan(children: [
+          TextSpan(
+            text: "Due Date:\t\t\t",
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          TextSpan(
+            text: "${assignment.dueDate}",
+            style: TextStyle(color: Colors.white),
+          )
+        ])),
+        spacedDivider,
+        Text.rich(TextSpan(children: [
+          TextSpan(
+            text: "Date Issued:\t\t\t",
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          TextSpan(
+            text: "${assignment.dateIssued}",
+            style: TextStyle(color: Colors.white),
+          )
+        ])),
       ],
     );
 
     final topContent = Stack(
       children: <Widget>[
-        Container(
-          padding: EdgeInsets.only(left: 10.0),
-          height: MediaQuery.of(context).size.height * 0.5,
-        ),
         Container(
           height: MediaQuery.of(context).size.height * 0.5,
           padding: EdgeInsets.all(20.0),
@@ -112,7 +101,7 @@ class DetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             RaisedButton(
-              onPressed: () => {
+              /*  onPressed: () => {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) {
                   return Scaffold(
@@ -120,7 +109,7 @@ class DetailPage extends StatelessWidget {
                         child: PatientListScreen(questionnaire),
                   ));
                 }))
-              },
+              },*/
               color: Color.fromRGBO(58, 66, 86, 1.0),
               child: Text("START", style: TextStyle(color: Colors.white)),
             ),
@@ -138,7 +127,10 @@ class DetailPage extends StatelessWidget {
 
     return Scaffold(
       body: Column(
-        children: <Widget>[topContent, bottomContent],
+        children: <Widget>[
+          topContent,
+          Expanded(child: QuestionnaireList(assignment.id))
+        ],
       ),
     );
   }

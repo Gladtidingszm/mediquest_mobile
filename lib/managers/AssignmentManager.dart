@@ -7,9 +7,9 @@ import 'package:mediquest_mobile/payload/ApiPayload.dart';
 import 'package:mediquest_mobile/utils/GeneralUtils.dart';
 
 class AssignmentManager {
-  Future<List<Assignment>> getStudentAssignments(int studentId) async {
+  Future<List<Assignment>> getStudentAssignments() async {
     List<Assignment> assignments = List();
-    Response response = await ApiClient.client.getStudentAssignments(studentId);
+    Response response = await ApiClient.client.getStudentAssignments();
 
     if (response != null &&
         response.body != null &&

@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:mediquest_mobile/components/QuestionaireListItem.dart';
-import 'package:mediquest_mobile/models/Lesson.dart';
+import 'package:mediquest_mobile/components/AssignmentItemView.dart';
+import 'package:mediquest_mobile/managers/AssignmentManager.dart';
+import 'package:mediquest_mobile/models/Assignment.dart';
 
-class ListPage extends StatefulWidget {
-  ListPage({Key key, this.title}) : super(key: key);
+class AssignmentList extends StatefulWidget {
 
-  final String title;
 
   @override
-  _ListPageState createState() => _ListPageState();
+  _AssignmentListState createState() => _AssignmentListState();
 }
 
-class _ListPageState extends State<ListPage> {
-  List lessons;
+class _AssignmentListState extends State<AssignmentList> {
 
   @override
   void initState() {
-    lessons = getLessons();
     super.initState();
   }
 
@@ -24,13 +21,49 @@ class _ListPageState extends State<ListPage> {
   Widget build(BuildContext context) {
     final makeBody = Container(
       // decoration: BoxDecoration(color: Color.fromRGBO(58, 66, 86, 1.0)),
-      child: ListView.builder(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        itemCount: lessons.length,
-        itemBuilder: (BuildContext context, int index) {
-          return QuestionaireListItem(lessons[index]);
-        },
+      child: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.all(20),
+          child: FutureBuilder(
+            builder: (context, AsyncSnapshot snap) {
+              switch (snap.connectionState) {
+                case ConnectionState.none:
+                  return Center(child: Text("No internet,  Please try later"));
+                  break;
+                case ConnectionState.waiting:
+                  return Center(child: CircularProgressIndicator());
+                  break;
+                case ConnectionState.active:
+                  return Center(child: Text("active"));
+                  break;
+                case ConnectionState.done:
+                  if (snap.hasData && snap.data.length != 0) {
+                    return Column(
+                      children: [
+                        ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: snap.data.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return AssignmentItemView(snap.data[index]);
+                          },
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Container(
+                      child: Center(
+                        child: Text("Oops,  No data,Check You Have Internet"),
+                      ),
+                    );
+                  }
+                  break;
+              }
+              return Container();
+            },
+            future: getAssignments(),
+          ),
+        ),
       ),
     );
 
@@ -55,56 +88,19 @@ class _ListPageState extends State<ListPage> {
   }
 }
 
-List getLessons() {
-  return [
-    Lesson(
-        title: "Data Mining",
-        level: "Progress",
-        indicatorValue: 0.33,
-        price: 20,
-        content:
-            "Start by taking a couple of minutes to read the info in this section. Launch your app and click on the Settings menu.  While on the settings page, click the Save button.  You should see a circular progress indicator display in the middle of the page and the user interface elements cannot be clicked due to the modal barrier that is constructed."),
-    Lesson(
-        title: "Commerce",
-        level: "Progress",
-        indicatorValue: 0.33,
-        price: 50,
-        content:
-            "Start by taking a couple of minutes to read the info in this section. Launch your app and click on the Settings menu.  While on the settings page, click the Save button.  You should see a circular progress indicator display in the middle of the page and the user interface elements cannot be clicked due to the modal barrier that is constructed."),
-    Lesson(
-        title: "Computer Networks",
-        level: "Progress",
-        indicatorValue: 0.66,
-        price: 30,
-        content:
-            "Start by taking a couple of minutes to read the info in this section. Launch your app and click on the Settings menu.  While on the settings page, click the Save button.  You should see a circular progress indicator display in the middle of the page and the user interface elements cannot be clicked due to the modal barrier that is constructed."),
-    Lesson(
-        title: "Artificial Intelligence",
-        level: "Progress",
-        indicatorValue: 0.66,
-        price: 30,
-        content:
-            "Start by taking a couple of minutes to read the info in this section. Launch your app and click on the Settings menu.  While on the settings page, click the Save button.  You should see a circular progress indicator display in the middle of the page and the user interface elements cannot be clicked due to the modal barrier that is constructed."),
-    Lesson(
-        title: "Network Security pppppp pppp",
-        level: "Progress",
-        indicatorValue: 1.0,
-        price: 50,
-        content:
-            "Start by taking a couple of minutes to read the info in this section. Launch your app and click on the Settings menu.  While on the settings page, click the Save button.  You should see a circular progress indicator display in the middle of the page and the user interface elements cannot be clicked due to the modal barrier that is constructed."),
-    Lesson(
-        title: "Engine Studies",
-        level: "Progress",
-        indicatorValue: 1.0,
-        price: 50,
-        content:
-            "Start by taking a couple of minutes to read the info in this section. Launch your app and click on the Settings menu.  While on the settings page, click the Save button.  You should see a circular progress indicator display in the middle of the page and the user interface elements cannot be clicked due to the modal barrier that is constructed."),
-    Lesson(
-        title: "Statics ",
-        level: "Progress",
-        indicatorValue: 1.0,
-        price: 50,
-        content:
-            "Start by taking a couple of minutes to read the info in this section. Launch your app and click on the Settings menu.  While on the settings page, click the Save button.  You should see a circular progress indicator display in the middle of the page and the user interface elements cannot be clicked due to the modal barrier that is constructed.  ")
-  ];
+
+Future<List<Assignment>> getAssignments() async {
+  print("getting assignments");
+  List<Assignment> assignments = List();
+
+  assignments = await AssignmentManager().getStudentAssignments();
+
+  if (assignments != null && assignments.isNotEmpty) {
+    print("on data return assignments  list not empty");
+    return assignments;
+  } else {
+    print(" on data return assignments   list empty ");
+  }
 }
+
+

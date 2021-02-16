@@ -55,5 +55,10 @@ class Patient {
     }
     return data;
   }
+
+  @override
+  String toString() {
+    return 'Patient{id: $id, questionnaireId: $questionnaireId, initials: $initials, age: $age, sex: $sex, dob: $dob, institutionId: $institutionId, createdAt: $createdAt, updatedAt: $updatedAt, submission: $submission}';
+  }
 }
 

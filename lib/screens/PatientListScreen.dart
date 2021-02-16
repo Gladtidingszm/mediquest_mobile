@@ -1,11 +1,15 @@
 import 'package:cool_alert/cool_alert.dart';
+import 'package:edge_alert/edge_alert.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
+import 'package:loading_dialog/loading_dialog.dart';
 import 'package:mediquest_mobile/managers/QuestionnaireManager.dart';
 import 'package:mediquest_mobile/models/Patient.dart';
 import 'package:mediquest_mobile/models/Questionnaire.dart';
 import 'package:mediquest_mobile/screens/CreatePatient.dart';
 import 'package:mediquest_mobile/screens/Questionaire.dart';
+import 'package:mediquest_mobile/utils/GUIUtils.dart';
 
 class PatientListScreen extends StatefulWidget {
   Questionnaire questionnaire;
@@ -73,15 +77,62 @@ class _PatientListScreenState extends State<PatientListScreen>
                                   height: 50,
                                   width: 350,
                                   child: SingleChildScrollView(
-                                    child: FlatButton(
-                                      child: Text("Take the questionnaire"),
-                                      onPressed: () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) {
-                                          return QuestionnaireView(patient);
-                                        }));
-                                      },
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: FlatButton(
+                                            child: Text("Questionnaire"),
+                                            onPressed: () {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                return QuestionnaireView(
+                                                    patient);
+                                              }));
+                                            },
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: FlatButton(
+                                            child: Text(
+                                              "Delete",
+                                              style: TextStyle(
+                                                  color: Colors.redAccent),
+                                            ),
+                                            onPressed: () async {
+                                              LoadingDialog loadingDialog =
+                                                  LoadingDialog(
+                                                      buildContext: context,
+                                                      loadingMessage:
+                                                          "Deleting...");
+                                              loadingDialog.show();
+                                              Patient deletedPatient =
+                                                  await QuestionnaireManager
+                                                      .instance
+                                                      .removePatient(
+                                                          patient.id);
+                                              loadingDialog.hide();
+                                              if (deletedPatient != null) {
+                                                setState(() {});
+                                                CoolAlert.show(
+                                                  context: context,
+                                                  type: CoolAlertType.success,
+                                                  confirmBtnText: "Yes",
+                                                  text: "Patient deleted",
+                                                );
+                                              } else {
+                                                CoolAlert.show(
+                                                  context: context,
+                                                  type: CoolAlertType.error,
+                                                  confirmBtnText: "Yes",
+                                                  text:
+                                                      "Patient delete failed!",
+                                                );
+                                              }
+                                            },
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -118,13 +169,7 @@ class _PatientListScreenState extends State<PatientListScreen>
             titleStyle: TextStyle(fontSize: 16, color: Colors.white),
             onPress: () {
               _animationController.reverse();
-              showDialog(
-                context: context,
-                barrierDismissible: true,
-                builder: (context) {
-                  return CreatePatient();
-                },
-              );
+              showCreatePatient(context, widget.questionnaire);
             },
           ),
           // Floating action menu item
@@ -229,3 +274,53 @@ Future<List<Patient>> getQuestionnairePatients(int patientId) async {
     print(" on data return patients  list empty ");
   }
 }
+
+Future<Patient> removePatient(Patient patientData, BuildContext context) async {
+  LoadingDialog loadingDialog =
+  LoadingDialog(buildContext: context, loadingMessage: "Removing...");
+  loadingDialog.show();
+
+  Patient patient = await QuestionnaireManager().removePatient(patientData.id);
+  loadingDialog.hide();
+  if (patient != null) {
+    EdgeAlert.show(context,
+        title: 'Success',
+        description: 'Patient removed.',
+        icon: Icons.check_circle_outline,
+        backgroundColor: Colors.green,
+        gravity: EdgeAlert.TOP);
+  } else {
+    {
+      EdgeAlert.show(context,
+          title: 'Failure',
+          description: 'Failed to remove patient.',
+          icon: Icons.dangerous,
+          backgroundColor: Colors.red,
+          gravity: EdgeAlert.TOP);
+    }
+  }
+  return patient;
+}
+
+YYDialog showCreatePatient(BuildContext context, Questionnaire questionnaire) {
+  return YYDialog().build(context)
+    ..width = screenHeight(context) * 0.6
+  //..height = screenWidth(context)*0.99
+    ..backgroundColor = Colors.blueGrey
+    ..borderRadius = 10.0
+    ..showCallBack = () {
+      print("showCallBack invoke");
+    }
+    ..dismissCallBack = () {
+      print("dismissCallBack invoke");
+    }
+    ..widget(CreatePatient(questionnaire))
+    ..animatedFunc = (child, animation) {
+      return ScaleTransition(
+        child: child,
+        scale: Tween(begin: 0.0, end: 1.0).animate(animation),
+      );
+    }
+    ..show();
+}
+

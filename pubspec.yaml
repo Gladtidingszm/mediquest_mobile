@@ -45,6 +45,7 @@ dependencies:
   #https://pub.dev/packages/edge_alert
   edge_alert: ^0.0.1
   loading_dialog: ^0.0.1
+  flutter_custom_dialog: ^1.0.20
 
 
 

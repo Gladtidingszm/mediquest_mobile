@@ -335,6 +335,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.5"
+  flutter_custom_dialog:
+    dependency: "direct main"
+    description:
+      name: flutter_custom_dialog
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.20"
   flutter_datetime_picker:
     dependency: transitive
     description:

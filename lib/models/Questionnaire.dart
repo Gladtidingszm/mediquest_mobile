@@ -49,4 +49,9 @@ class Questionnaire {
     data['updated_at'] = this.updatedAt;
     return data;
   }
+
+  @override
+  String toString() {
+    return 'Questionnaire{id: $id, assignmentId: $assignmentId, institution: $institution, department: $department, mentor: $mentor, interviewDate: $interviewDate, startOfRotation: $startOfRotation, institutionId: $institutionId, createdAt: $createdAt, updatedAt: $updatedAt}';
+  }
 }

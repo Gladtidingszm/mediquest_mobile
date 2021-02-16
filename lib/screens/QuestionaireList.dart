@@ -1,34 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
 import 'package:mediquest_mobile/components/QuestionaireListItem.dart';
 import 'package:mediquest_mobile/managers/QuestionnaireManager.dart';
-import 'package:mediquest_mobile/models/Lesson.dart';
 import 'package:mediquest_mobile/models/Questionnaire.dart';
+import 'package:mediquest_mobile/screens/QuestionnaireFill.dart';
+import 'package:mediquest_mobile/utils/GUIUtils.dart';
 
-class ListPage extends StatefulWidget {
-  ListPage({Key key, this.title}) : super(key: key);
+class QuestionnaireList extends StatelessWidget {
+  var assignmentId;
 
-  final String title;
+  QuestionnaireList(this.assignmentId);
 
-  @override
-  _ListPageState createState() => _ListPageState();
-}
-
-class _ListPageState extends State<ListPage> {
-  List lessons;
-
-  @override
-  void initState() {
-    lessons = getLessons();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-
-
     final makeBody = Container(
       // decoration: BoxDecoration(color: Color.fromRGBO(58, 66, 86, 1.0)),
       child: SingleChildScrollView(
+        primary: true,
         child: Container(
           margin: EdgeInsets.all(20),
           child: FutureBuilder(
@@ -48,6 +35,7 @@ class _ListPageState extends State<ListPage> {
                     return Column(
                       children: [
                         ListView.builder(
+                          primary: false,
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
                           itemCount: snap.data.length,
@@ -68,47 +56,22 @@ class _ListPageState extends State<ListPage> {
               }
               return Container();
             },
-            future: getQuestionnaires(),
+            future: getAssignmentQuestionnaires(assignmentId),
           ),
-        ),
-      ),
-    );
-
-    final makeBottom = Container(
-      height: 55.0,
-      child: BottomAppBar(
-        color: Color.fromRGBO(58, 66, 86, 1.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            IconButton(
-              icon: Icon(Icons.home, color: Colors.white),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: Icon(Icons.blur_on, color: Colors.white),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: Icon(Icons.hotel, color: Colors.white),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: Icon(Icons.account_box, color: Colors.white),
-              onPressed: () {},
-            )
-          ],
         ),
       ),
     );
     final topAppBar = AppBar(
       elevation: 0.1,
+      leading: Container(),
       backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
-      title: Text("All Questionnaires"),
+      title: Text("  Questionnaires"),
       actions: <Widget>[
         IconButton(
-          icon: Icon(Icons.list),
-          onPressed: () {},
+          icon: Icon(Icons.add),
+          onPressed: () {
+            showQuestionnaireFill(context, assignmentId);
+          },
         )
       ],
     );
@@ -117,16 +80,41 @@ class _ListPageState extends State<ListPage> {
       backgroundColor: Colors.white,
       appBar: topAppBar,
       body: makeBody,
+
       // bottomNavigationBar: makeBottom,
     );
   }
 }
 
-Future<List<Questionnaire>> getQuestionnaires() async {
+YYDialog showQuestionnaireFill(BuildContext context, int assignmentId) {
+  return YYDialog().build(context)
+    ..width = screenHeight(context) * 0.6
+    //..height = screenWidth(context)*0.99
+    ..backgroundColor = Colors.blueGrey
+    ..borderRadius = 10.0
+    ..showCallBack = () {
+      print("showCallBack invoke");
+    }
+    ..dismissCallBack = () {
+      print("dismissCallBack invoke");
+    }
+    ..widget(QuestionnaireFill(assignmentId))
+    ..animatedFunc = (child, animation) {
+      return ScaleTransition(
+        child: child,
+        scale: Tween(begin: 0.0, end: 1.0).animate(animation),
+      );
+    }
+    ..show();
+}
+
+Future<List<Questionnaire>> getAssignmentQuestionnaires(
+    int assignmentId) async {
   print("getting questionnaires");
   List<Questionnaire> questionnaires = List();
 
-  questionnaires = await QuestionnaireManager().getStudentQuestionnaires();
+  questionnaires =
+      await QuestionnaireManager().getAssignmentQuestionnaires(assignmentId);
 
   if (questionnaires != null && questionnaires.isNotEmpty) {
     print("on data return questionnaires  list not empty");
@@ -135,69 +123,3 @@ Future<List<Questionnaire>> getQuestionnaires() async {
     print(" on data return questionnaires   list empty ");
   }
 }
-
-List getLessons() {
-  return [
-    Lesson(
-        title: "Data Mining",
-        level: "Progress",
-        indicatorValue: 0.33,
-        price: 20,
-        content:
-            "Start by taking a couple of minutes to read the info in this section. Launch your app and click on the Settings menu.  While on the settings page, click the Save button.  You should see a circular progress indicator display in the middle of the page and the user interface elements cannot be clicked due to the modal barrier that is constructed."),
-    Lesson(
-        title: "Commerce",
-        level: "Progress",
-        indicatorValue: 0.33,
-        price: 50,
-        content:
-        "Start by taking a couple of minutes to read the info in this section. Launch your app and click on the Settings menu.  While on the settings page, click the Save button.  You should see a circular progress indicator display in the middle of the page and the user interface elements cannot be clicked due to the modal barrier that is constructed."),
-    Lesson(
-        title: "Computer Networks",
-        level: "Progress",
-        indicatorValue: 0.66,
-        price: 30,
-        content:
-        "Start by taking a couple of minutes to read the info in this section. Launch your app and click on the Settings menu.  While on the settings page, click the Save button.  You should see a circular progress indicator display in the middle of the page and the user interface elements cannot be clicked due to the modal barrier that is constructed."),
-    Lesson(
-        title: "Artificial Intelligence",
-        level: "Progress",
-        indicatorValue: 0.66,
-        price: 30,
-        content:
-        "Start by taking a couple of minutes to read the info in this section. Launch your app and click on the Settings menu.  While on the settings page, click the Save button.  You should see a circular progress indicator display in the middle of the page and the user interface elements cannot be clicked due to the modal barrier that is constructed."),
-    Lesson(
-        title: "Network Security pppppp pppp",
-        level: "Progress",
-        indicatorValue: 1.0,
-        price: 50,
-        content:
-        "Start by taking a couple of minutes to read the info in this section. Launch your app and click on the Settings menu.  While on the settings page, click the Save button.  You should see a circular progress indicator display in the middle of the page and the user interface elements cannot be clicked due to the modal barrier that is constructed."),
-    Lesson(
-        title: "Engine Studies",
-        level: "Progress",
-        indicatorValue: 1.0,
-        price: 50,
-        content:
-        "Start by taking a couple of minutes to read the info in this section. Launch your app and click on the Settings menu.  While on the settings page, click the Save button.  You should see a circular progress indicator display in the middle of the page and the user interface elements cannot be clicked due to the modal barrier that is constructed."),
-    Lesson(
-        title: "Statics ",
-        level: "Progress",
-        indicatorValue: 1.0,
-        price: 50,
-        content:
-        "Start by taking a couple of minutes to read the info in this section. Launch your app and click on the Settings menu.  While on the settings page, click the Save button.  You should see a circular progress indicator display in the middle of the page and the user interface elements cannot be clicked due to the modal barrier that is constructed.  ")
-  ];
-}
-
-
-
-
-
-
-
-
-
-
-
-

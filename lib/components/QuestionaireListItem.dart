@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mediquest_mobile/models/Questionnaire.dart';
-import 'package:mediquest_mobile/screens/QuestionaireProfile.dart';
+import 'package:mediquest_mobile/screens/PatientListScreen.dart';
 
 class QuestionaireListItem extends StatelessWidget {
   Questionnaire questionnaire;
@@ -35,17 +35,14 @@ class QuestionaireListItem extends StatelessWidget {
                   flex: 1,
                   child: Container(
                     // tag: 'hero',
-                    child: LinearProgressIndicator(
-                        backgroundColor: Color.fromRGBO(209, 224, 224, 0.2),
-                        value: 2,
-                        valueColor: AlwaysStoppedAnimation(Colors.green)),
+                    child: Text("Dept:"),
                   )),
               Expanded(
                 flex: 4,
                 child: Padding(
                     padding: EdgeInsets.only(left: 10.0),
-                    child:
-                        Text("Level", style: TextStyle(color: Colors.black))),
+                    child: Text("${questionnaire.department}",
+                        style: TextStyle(color: Colors.black))),
               )
             ],
           ),
@@ -55,7 +52,7 @@ class QuestionaireListItem extends StatelessWidget {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => DetailPage(questionnaire)));
+                    builder: (context) => PatientListScreen(questionnaire)));
           },
         ),
       ),

@@ -41,7 +41,7 @@ class _MultipleSelectQuestionState extends State<MultipleSelectQuestion> {
         child: FormBuilderCheckboxGroup(
           decoration: InputDecoration(
             labelText: widget.question?.questionText,
-            labelStyle: TextStyle(fontSize: 18),
+            labelStyle: TextStyle(fontSize: 25),
           ),
           initialValue: widget.initialValue,
           enabled: widget.initialValue == null ? true : false,

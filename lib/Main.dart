@@ -1,13 +1,15 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mediquest_mobile/screens/AssignmentList.dart';
 import 'package:mediquest_mobile/screens/DashBoard.dart';
 import 'package:mediquest_mobile/screens/LoginScreen.dart';
-import 'package:mediquest_mobile/screens/SubmissionProfile.dart';
+import 'package:mediquest_mobile/screens/QuestionnaireFill.dart';
+import 'package:mediquest_mobile/utils/GUIUtils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'screens/QuestionaireList.dart';
 import 'utils/SharedPreferncesUtil.dart';
 
 void main() async {
@@ -108,8 +110,8 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           children: <Widget>[
             DashBoard(),
-            ListPage(title: "Title"),
-            SubmissionProfile(),
+            AssignmentList(),
+            LoginScreen(),
             LoginScreen(),
           ],
         ),
@@ -134,12 +136,31 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.chat_bubble)
           ),
           BottomNavyBarItem(
-              title: Text('Item Four'),
-              icon: Icon(Icons.settings)
-          ),
+              title: Text('Item Four'), icon: Icon(Icons.settings)),
         ],
       ),
-
     );
   }
+}
+
+YYDialog showAssignmentFill(BuildContext context) {
+  return YYDialog().build(context)
+    ..width = screenHeight(context) * 0.6
+    //..height = screenWidth(context)*0.99
+    ..backgroundColor = Colors.blueGrey
+    ..borderRadius = 10.0
+    ..showCallBack = () {
+      print("showCallBack invoke");
+    }
+    ..dismissCallBack = () {
+      print("dismissCallBack invoke");
+    }
+    ..widget(QuestionnaireFill(1))
+    ..animatedFunc = (child, animation) {
+      return ScaleTransition(
+        child: child,
+        scale: Tween(begin: 0.0, end: 1.0).animate(animation),
+      );
+    }
+    ..show();
 }

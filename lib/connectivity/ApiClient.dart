@@ -1,10 +1,12 @@
 import 'dart:convert' as convert;
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:mediquest_mobile/constants/Values.dart' as constants;
 import 'package:mediquest_mobile/models/Patient.dart';
+import 'package:mediquest_mobile/models/Questionnaire.dart';
 import 'package:mediquest_mobile/models/SubmissionAnswer.dart';
 import 'package:mediquest_mobile/models/request/SubmissionRequestBody.dart';
 import 'package:mediquest_mobile/payload/ApiPayload.dart';
@@ -24,7 +26,7 @@ class ApiClient {
 
   Future<void> _populateHeaders({@required String userToken}) async {
     // _headers['Content-Type'] = 'application/json';
-    _headers['Accept'] = 'application/json';
+    // _headers['Accept'] = 'application/json';
 
     if (userToken != null) {
       _headers['Authorization'] = 'Bearer $userToken';
@@ -37,10 +39,13 @@ class ApiClient {
     }
   }
 
-  Future<Response> getStudentAssignments(int studentId) async {
-    String fullUrl = _baseUrl + "assignment/all/$studentId";
+  Future<Response> getStudentAssignments() async {
+    String fullUrl = _baseUrl + "assignments/all";
     _populateHeaders(userToken: SharedPreferencesUtil.getAuthToken());
     print(fullUrl);
+    print("==================HEADERS======================================");
+    print(_headers);
+    print("==================HEADERS======================================");
     Future<Response> response = _inner.get(fullUrl, headers: _headers);
     return response;
   }
@@ -127,17 +132,17 @@ class ApiClient {
   }
 
   Future<Response> getAssignmentQuestionnaires(int assignmentId) async {
-    String fullUrl = _baseUrl + "questionnaire/assignment-id/$assignmentId";
+    String fullUrl = _baseUrl + "questionnaires/all/$assignmentId";
     print(fullUrl);
     Future<Response> response = _inner.get(fullUrl, headers: _headers);
     return response;
   }
 
   Future<Response> removePatient(int patientId) async {
-    String fullUrl = _baseUrl + "questionnaire/remove-patient/$patientId";
+    String fullUrl = _baseUrl + 'patient/delete/$patientId';
     _populateHeaders(userToken: SharedPreferencesUtil.getAuthToken());
     print(fullUrl);
-    Future<Response> response = _inner.get(fullUrl, headers: _headers);
+    Future<Response> response = _inner.delete(fullUrl, headers: _headers);
     return response;
   }
 
@@ -163,7 +168,8 @@ class ApiClient {
       "created_at": DateTime.now().toString(),
       "id": "none"
     };
-    var response = await _inner.post(fullUrl, headers: _headers, body: map);
+    var response = await _inner.post(fullUrl,
+        headers: _headers, body: JsonEncoder().convert(patient));
     print(response.body);
     print(response.body);
     return response;
@@ -212,6 +218,63 @@ class ApiClient {
     }
 
     return answers;
+  }
+
+  Future<Questionnaire> fillInQuestionnaire(
+      {@required Questionnaire questionnaire}) async {
+    print('Filling in Questionnaire Api');
+
+    _populateHeaders(userToken: SharedPreferencesUtil.getAuthToken());
+    try {
+      var endPoint = '${_baseUrl}questionnaire/create';
+      print(endPoint);
+      print(_headers);
+      print("==========================PAYLOAD SEND=====================");
+      print(convert.JsonEncoder().convert(questionnaire));
+      print("==========================PAYLOAD SEND=====================");
+
+      var response = await _inner
+          .post(endPoint,
+              headers: _headers,
+              body: convert.JsonUtf8Encoder().convert(questionnaire))
+          .timeout(Duration(seconds: 30));
+
+      if (response != null) {
+        if (response.statusCode == 201) {
+          print("*************");
+          print("SUCCESS");
+          print("*************");
+          print(response.body);
+          print("*************");
+          var payload = ApiPayload.fromJson(convert.json.decode(response.body));
+          questionnaire = Questionnaire.fromJson(payload.payload);
+
+          if (questionnaire != null) {
+            print(
+                "==========================PAYLOAD RETURN=====================");
+            print(questionnaire.toString());
+            print(
+                "==========================PAYLOAD RETURN=====================");
+            return questionnaire;
+          } else {
+            print("*************");
+            print("NULL QUESTIONNAIRE");
+            print("*************");
+          }
+        } else {
+          print(response.statusCode);
+          print(response.body);
+        }
+      } else {
+        print("*************");
+        print("NULL RESPONSE");
+        print("*************");
+      }
+    } catch (e) {
+      print(e);
+    }
+
+    return null;
   }
 }
 

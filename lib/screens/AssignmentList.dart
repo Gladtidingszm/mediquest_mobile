@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mediquest_mobile/components/AssignmentItemView.dart';
 import 'package:mediquest_mobile/managers/AssignmentManager.dart';
+import 'package:mediquest_mobile/managers/AuthenticationManager.dart';
 import 'package:mediquest_mobile/models/Assignment.dart';
 
 class AssignmentList extends StatefulWidget {
@@ -70,12 +71,26 @@ class _AssignmentListState extends State<AssignmentList> {
     final topAppBar = AppBar(
       elevation: 0.1,
       backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
-      title: Text("All Questionnaires"),
+      title: Text("Home"),
       actions: <Widget>[
-        IconButton(
-          icon: Icon(Icons.list),
-          onPressed: () {},
-        )
+        PopupMenuButton<String>(
+          icon: Icon(
+            Icons.person,
+            size: 40,
+          ),
+          onSelected: (String result) {},
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            PopupMenuItem<String>(
+              value: "",
+              child: FlatButton(
+                child: Text('Logout'),
+                onPressed: () async {
+                  AuthenticationManager.logout(context: context);
+                },
+              ),
+            ),
+          ],
+        ),
       ],
     );
 

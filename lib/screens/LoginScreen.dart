@@ -3,7 +3,7 @@ import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter_login/flutter_login.dart';
 import 'package:mediquest_mobile/Main.dart';
 import 'package:mediquest_mobile/managers/AuthenticationManager.dart';
-import 'package:mediquest_mobile/payload/AuthenticationPayload.dart';
+import 'package:mediquest_mobile/payload/StudentAuthPayload.dart';
 import 'package:mediquest_mobile/utils/SharedPreferncesUtil.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -12,8 +12,8 @@ class LoginScreen extends StatelessWidget {
   Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
 
   Future<String> _loginUser(LoginData data) async {
-    AuthenticationPayload authenticationPayload =
-        await AuthenticationManager().login(data.name, data.password);
+    StudentAuthPayload authenticationPayload =
+    await AuthenticationManager().login(data.name, data.password);
     print("done");
     print(authenticationPayload.student.toJson());
     SharedPreferencesUtil.setCurrentStudent(authenticationPayload.student);
@@ -24,9 +24,15 @@ class LoginScreen extends StatelessWidget {
 
   Future<String> _recoverPassword(String name) {
     return Future.delayed(loginTime).then((_) {
-        return 'Okay';
+      return 'Okay';
     });
   }
+
+  @override
+  void initState() {
+    SharedPreferencesUtil.setAuthToken(token: null);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -35,17 +41,20 @@ class LoginScreen extends StatelessWidget {
       top: Radius.circular(20.0),
     );
 
+
     return FlutterLogin(
       title: "MediQuest",
-      logo: 'assets/images/ecorp.png',
+      //  logo: 'assets/images/ecorp.png',
       logoTag: "Suit",
       titleTag: "Okay",
 
       emailValidator: (value) {
-        if (!value.contains('@') || !value.endsWith('.com')) {
-          return "Email must contain '@' and end with '.com'";
+        if (!value.contains('@') | | !value.endsWith ('.com')
+        ) {
+        return "Email must contain '@' and end with '.com'";
         }
-        return null;
+        return
+        null;
       },
       passwordValidator: (value) {
         if (value.isEmpty) {

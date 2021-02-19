@@ -1,20 +1,20 @@
-import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mediquest_mobile/screens/AssignmentList.dart';
-import 'package:mediquest_mobile/screens/DashBoard.dart';
 import 'package:mediquest_mobile/screens/LoginScreen.dart';
-import 'package:mediquest_mobile/screens/QuestionnaireFill.dart';
-import 'package:mediquest_mobile/utils/GUIUtils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'managers/AuthenticationManager.dart';
 import 'utils/SharedPreferncesUtil.dart';
 
+Widget currentScreen;
+
 void main() async {
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferencesUtil.initSharedPreferences();
+  currentScreen = await getNextScreen();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -78,19 +78,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  int _currentIndex = 0;
-  PageController _pageController;
   SharedPreferences prefs;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
     super.dispose();
   }
 
@@ -101,66 +97,19 @@ class _MyHomePageState extends State<MyHomePage> {
         elevation: 0.1,
         backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
       ),
-
       body: SizedBox.expand(
-        child: PageView(
-          controller: _pageController,
-          onPageChanged: (index) {
-            setState(() => _currentIndex = index);
-          },
-          children: <Widget>[
-            DashBoard(),
-            AssignmentList(),
-            LoginScreen(),
-            LoginScreen(),
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomNavyBar(
-        selectedIndex: _currentIndex,
-        onItemSelected: (index) {
-          setState(() => _currentIndex = index);
-          _pageController.jumpToPage(index);
-        },
-        items: <BottomNavyBarItem>[
-          BottomNavyBarItem(
-              title: Text('Home'),
-              icon: Icon(Icons.home)
-          ),
-          BottomNavyBarItem(
-              title: Text('Questionnaires'),
-              icon: Icon(Icons.apps),
-          ),
-          BottomNavyBarItem(
-              title: Text('Item Three'),
-              icon: Icon(Icons.chat_bubble)
-          ),
-          BottomNavyBarItem(
-              title: Text('Item Four'), icon: Icon(Icons.settings)),
-        ],
+        child: currentScreen,
       ),
     );
   }
 }
 
-YYDialog showAssignmentFill(BuildContext context) {
-  return YYDialog().build(context)
-    ..width = screenHeight(context) * 0.6
-    //..height = screenWidth(context)*0.99
-    ..backgroundColor = Colors.blueGrey
-    ..borderRadius = 10.0
-    ..showCallBack = () {
-      print("showCallBack invoke");
-    }
-    ..dismissCallBack = () {
-      print("dismissCallBack invoke");
-    }
-    ..widget(QuestionnaireFill(1))
-    ..animatedFunc = (child, animation) {
-      return ScaleTransition(
-        child: child,
-        scale: Tween(begin: 0.0, end: 1.0).animate(animation),
-      );
-    }
-    ..show();
+Future<Widget> getNextScreen() async {
+  String token = SharedPreferencesUtil.getAuthToken();
+  bool isValidToken = await AuthenticationManager.validateToken(token);
+  if (token == null || token.isEmpty || !isValidToken) {
+    return LoginScreen();
+  } else {
+    return AssignmentList();
+  }
 }

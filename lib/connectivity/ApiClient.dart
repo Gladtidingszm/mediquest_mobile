@@ -8,23 +8,24 @@ import 'package:mediquest_mobile/constants/Values.dart' as constants;
 import 'package:mediquest_mobile/models/Patient.dart';
 import 'package:mediquest_mobile/models/Questionnaire.dart';
 import 'package:mediquest_mobile/models/SubmissionAnswer.dart';
+import 'package:mediquest_mobile/models/request/LoginRequest.dart';
 import 'package:mediquest_mobile/models/request/SubmissionRequestBody.dart';
 import 'package:mediquest_mobile/payload/ApiPayload.dart';
 import 'package:mediquest_mobile/utils/SharedPreferncesUtil.dart';
 
 class ApiClient {
-  final Client _inner = Client();
-  String _baseUrl = constants.baseUrl;
+  static final Client _inner = Client();
+  static String _baseUrl = constants.baseUrl;
+  static final Duration _timeout = Duration(seconds: 20);
 
-  Map<String, String> _headers = {
+  static Map<String, String> _headers = {
     'Content-Type': 'application/json',
     'Authorization': 'authTest',
     'device': 'unknown',
     'Accept': 'application/json',
   };
-  static ApiClient client = ApiClient();
 
-  Future<void> _populateHeaders({@required String userToken}) async {
+  static Future<void> _populateHeaders({@required String userToken}) async {
     // _headers['Content-Type'] = 'application/json';
     // _headers['Accept'] = 'application/json';
 
@@ -37,6 +38,66 @@ class ApiClient {
     } else if (Platform.isIOS) {
       _headers['device'] = 'iOS';
     }
+  }
+
+  static ApiClient client = ApiClient();
+
+  static Future<bool> validateToken({@required String token}) async {
+    try {
+      _populateHeaders(userToken: token);
+      var endPoint = _baseUrl + 'validate-token';
+      print(endPoint);
+      print(_headers);
+      var response =
+          await _inner.get(endPoint, headers: _headers).timeout(_timeout);
+
+      print(response.statusCode);
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print(e.toString());
+    }
+
+    return false;
+  }
+
+  Future<ApiPayload<AuthResponse>> signUp(
+      {@required SignUpRequest request}) async {
+    print('signUp Api');
+    try {
+      _populateHeaders(userToken: null);
+      var endPoint = _baseUrl + 'auth/sign-up';
+      print(endPoint);
+      var response = await _apiClient
+          .post(endPoint,
+              headers: _headers, body: convert.JsonEncoder().convert(request))
+          .timeout(_timeout);
+
+      if (response.statusCode == 200) {
+        print("*************");
+        print(response.body);
+        print("*************");
+
+        var payload = ApiPayload.fromJson(convert.json.decode(response.body));
+
+        var requestResponse = ApiPayload<AuthResponse>();
+        if (payload.success) {
+          requestResponse.payload = AuthResponse.fromJson(payload.payload);
+        }
+        requestResponse.message = payload.message;
+        requestResponse.success = payload.success;
+
+        return requestResponse;
+      }
+    } catch (e) {
+      e.toString();
+    }
+
+    return null;
   }
 
   Future<Response> getStudentAssignments() async {
@@ -108,11 +169,11 @@ class ApiClient {
   Future<Response> login(String username, String password) async {
     String fullUrl = _baseUrl + "student/login";
     print(fullUrl);
+    LoginRequest loginRequest =
+        LoginRequest(email: username, password: password);
 
-    Future<Response> response = _inner.post(fullUrl, headers: _headers, body: {
-      "email": username,
-      "password": password,
-    });
+    Future<Response> response = _inner.post(fullUrl,
+        headers: _headers, body: convert.JsonEncoder().convert(loginRequest));
     return response;
   }
 

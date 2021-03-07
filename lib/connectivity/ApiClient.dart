@@ -9,6 +9,7 @@ import 'package:mediquest_mobile/models/Patient.dart';
 import 'package:mediquest_mobile/models/Questionnaire.dart';
 import 'package:mediquest_mobile/models/SubmissionAnswer.dart';
 import 'package:mediquest_mobile/models/request/LoginRequest.dart';
+import 'package:mediquest_mobile/models/request/RegisterRequest.dart';
 import 'package:mediquest_mobile/models/request/SubmissionRequestBody.dart';
 import 'package:mediquest_mobile/payload/ApiPayload.dart';
 import 'package:mediquest_mobile/utils/SharedPreferncesUtil.dart';
@@ -73,40 +74,7 @@ class ApiClient {
     return false;
   }
 
-  Future<ApiPayload<AuthResponse>> signUp(
-      {@required SignUpRequest request}) async {
-    print('signUp Api');
-    try {
-      _populateHeaders(userToken: null);
-      var endPoint = _baseUrl + 'auth/sign-up';
-      print(endPoint);
-      var response = await _apiClient
-          .post(endPoint,
-              headers: _headers, body: convert.JsonEncoder().convert(request))
-          .timeout(_timeout);
 
-      if (response.statusCode == 200) {
-        print("*************");
-        print(response.body);
-        print("*************");
-
-        var payload = ApiPayload.fromJson(convert.json.decode(response.body));
-
-        var requestResponse = ApiPayload<AuthResponse>();
-        if (payload.success) {
-          requestResponse.payload = AuthResponse.fromJson(payload.payload);
-        }
-        requestResponse.message = payload.message;
-        requestResponse.success = payload.success;
-
-        return requestResponse;
-      }
-    } catch (e) {
-      e.toString();
-    }
-
-    return null;
-  }
 
   Future<Response> getStudentAssignments() async {
     String fullUrl = _baseUrl + "assignments/all";
@@ -245,7 +213,6 @@ class ApiClient {
       "initials": patient.initials,
       "age": patient.age.toString(),
       "sex": patient.sex,
-      "dob": patient.dob,
       "institution_id": patient.institutionId.toString(),
       "updated_at": DateTime.now().toString(),
       "created_at": DateTime.now().toString(),
@@ -261,6 +228,7 @@ class ApiClient {
   Future<List<SubmissionAnswer>> submitPatientResponses(
       {@required SubmissionRequestBody submission}) async {
     print('Submission Api');
+    print(submission?.toJson());
     List<SubmissionAnswer> answers = List();
 
     _populateHeaders(userToken: SharedPreferencesUtil.getAuthToken());

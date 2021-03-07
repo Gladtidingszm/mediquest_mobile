@@ -74,6 +74,51 @@ class SubmissionManager {
     return submission;
   }
 
+  static Future<List<Submission>> getAllSubmissions() async {
+    print("getting submissions");
+    List<Submission> submissions;
+
+    Response response = await ApiClient.getAllSubmissions();
+
+    if (response != null &&
+        response.body != null &&
+        GeneralUtils.isSuccess(response.statusCode)) {
+      //decode the data
+      print("decoding ");
+      Map<String, dynamic> data = jsonDecode(response.body.toString());
+      ApiPayload payload = ApiPayload.fromJson(data);
+      if (payload.success) {
+        print("payload success");
+        print("converting");
+        try {
+          submissions = payload.payload.map<Submission>((json) {
+            Submission submission = Submission.fromJson(json);
+            print("*****************************************************");
+            print("${submission.toJson()}");
+            print("*****************************************************");
+            return submission;
+          }).toList();
+        } catch (e) {
+          print(e);
+        }
+
+        if (submissions != null && submissions.length > 0) {
+          print("submissions  not null len ${submissions.length} ");
+          print("*****************************************************");
+          // print("${payload.payload }");
+          print("*****************************************************");
+        } else {
+          print("submissionAnswers null ");
+        }
+      } else {
+        print("payload failed:  " + payload.message);
+      }
+    } else {
+      print("null  response");
+    }
+    return submissions;
+  }
+
   Future<Submission> rejectSubmission(int submissionId) async {
     print("rejecting submission");
 

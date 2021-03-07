@@ -1,17 +1,25 @@
-import 'package:edge_alert/edge_alert.dart';
 import 'package:flutter/material.dart';
-import 'package:loading_dialog/loading_dialog.dart';
-import 'package:mediquest_mobile/managers/SubmissionManager.dart';
+import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
 import 'package:mediquest_mobile/models/Submission.dart';
+import 'package:mediquest_mobile/screens/QuestionaireView.dart';
 import 'package:mediquest_mobile/screens/SubmissionProfile.dart';
+import 'package:mediquest_mobile/utils/GUIUtils.dart';
 
-class SubmissionItem extends StatelessWidget {
+import 'SubmissionReviseCommentView.dart';
+
+class SubmissionListItemView extends StatefulWidget {
   Submission submission;
 
-  SubmissionItem(this.submission);
+  SubmissionListItemView(this.submission);
 
   @override
+  _SubmissionListItemViewState createState() => _SubmissionListItemViewState();
+}
+
+class _SubmissionListItemViewState extends State<SubmissionListItemView> {
+  @override
   Widget build(BuildContext context) {
+    String status = widget.submission.status;
     return Container(
       child: Card(
         child: ExpansionTile(
@@ -22,27 +30,35 @@ class SubmissionItem extends StatelessWidget {
             ),
             title: Row(
               children: <Widget>[
-                Text(submission?.student?.user?.name),
+                Text(widget.submission?.student?.user?.name),
                 SizedBox(
-                  width: 16.0,
-                ),
-                Expanded(
-                  child: Text(
-                    submission.createdAt.toString(),
-                    style: TextStyle(fontSize: 12.0),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
+                  width: 13.0,
                 ),
               ],
             ),
-            subtitle: Text(submission?.patient?.initials ?? "UNKNOWN"),
+            trailing: Text(
+              widget.submission.status,
+              style: TextStyle(
+                fontSize: 14.0,
+                color: status == "approved"
+                    ? Colors.greenAccent
+                    : status == "pending"
+                        ? Colors.blue
+                        : Colors.red,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            subtitle: Text(
+              "Patient:  ${widget.submission?.patient?.initials ?? "UNKNOWN"}",
+              style: TextStyle(fontSize: 13),
+            ),
           ),
           children: <Widget>[
             ListTile(
               title: SizedBox(
                 height: 50,
-                width: 350,
+                width: double.infinity,
                 child: Row(
                   children: <Widget>[
                     Expanded(
@@ -56,7 +72,7 @@ class SubmissionItem extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context)
                               .push(MaterialPageRoute(builder: (context) {
-                            return SubmissionProfile(submission);
+                            return SubmissionProfile(widget.submission);
                           }));
                         },
                       ),
@@ -66,12 +82,14 @@ class SubmissionItem extends StatelessWidget {
                       child: MaterialButton(
                         color: Theme.of(context).accentColor,
                         child: const Text(
-                          'Confirm',
+                          'Redo',
                           style: TextStyle(color: Colors.greenAccent),
                         ),
                         onPressed: () async {
-                          Submission approvedSubmission =
-                              await approveSubmission(submission?.id, context);
+                          print("hereeeeeeeeeeeeee");
+                          print(widget.submission.toJson());
+                          showQuestionnaire(
+                              context, widget.submission.patient.id);
                         },
                       ),
                     ),
@@ -80,11 +98,12 @@ class SubmissionItem extends StatelessWidget {
                       child: OutlineButton(
                         color: Theme.of(context).accentColor,
                         child: Text(
-                          'Deny',
+                          'Comment',
                           style: TextStyle(color: Colors.redAccent),
                         ),
-                        onPressed: () {
-                          rejectSubmission(submission?.id, context);
+                        onPressed: () async {
+                          showAddCommentDialog(
+                              context, widget.submission?.comment);
                         },
                       ),
                     ),
@@ -99,54 +118,46 @@ class SubmissionItem extends StatelessWidget {
   }
 }
 
-Future<Submission> approveSubmission(int id, BuildContext context) async {
-  LoadingDialog loadingDialog =
-      LoadingDialog(buildContext: context, loadingMessage: "Approving...");
-  loadingDialog.show();
-
-  Submission approvedSubmission =
-      await SubmissionManager().approveSubmission(id);
-  if (approvedSubmission != null) {
-    EdgeAlert.show(context,
-        title: 'Success',
-        description: 'Submission confirmed.',
-        icon: Icons.check_circle_outline,
-        backgroundColor: Colors.green,
-        gravity: EdgeAlert.TOP);
-  } else {
-    {
-      EdgeAlert.show(context,
-          title: 'Failure',
-          description: 'Failed to confirm.',
-          icon: Icons.dangerous,
-          backgroundColor: Colors.red,
-          gravity: EdgeAlert.TOP);
+YYDialog showQuestionnaire(BuildContext context, int submissionId) {
+  return YYDialog().build(context)
+    ..width = screenHeight(context) * 0.6
+    //..height = screenWidth(context)*0.99
+    ..backgroundColor = Colors.blueGrey
+    ..borderRadius = 10.0
+    ..showCallBack = () {
+      print("showCallBack invoke");
     }
-  }
-  return approvedSubmission;
+    ..dismissCallBack = () {
+      print("dismissCallBack invoke");
+    }
+    ..widget(QuestionnaireView(submissionId))
+    ..animatedFunc = (child, animation) {
+      return ScaleTransition(
+        child: child,
+        scale: Tween(begin: 0.0, end: 1.0).animate(animation),
+      );
+    }
+    ..show();
 }
 
-Future<Submission> rejectSubmission(int id, BuildContext context) async {
-  LoadingDialog loadingDialog =
-      LoadingDialog(buildContext: context, loadingMessage: "Rejecting...");
-  loadingDialog.show();
-
-  Submission approvedSubmission =
-      await SubmissionManager().rejectSubmission(id);
-  if (approvedSubmission != null) {
-    EdgeAlert.show(context,
-        title: 'Success',
-        description: 'Submission rejected.',
-        icon: Icons.check_circle_outline,
-        backgroundColor: Colors.green,
-        gravity: EdgeAlert.TOP);
-  } else {
-    EdgeAlert.show(context,
-        title: 'Failure',
-        description: 'Failed to reject.',
-        icon: Icons.dangerous,
-        backgroundColor: Colors.red,
-        gravity: EdgeAlert.TOP);
-  }
-  return approvedSubmission;
+YYDialog showAddCommentDialog(BuildContext context, String comment) {
+  return YYDialog().build(context)
+    ..width = screenHeight(context) * 0.6
+    //..height = screenWidth(context)*0.99
+    ..backgroundColor = Colors.blueGrey
+    ..borderRadius = 10.0
+    ..showCallBack = () {
+      print("showCallBack invoke");
+    }
+    ..dismissCallBack = () {
+      print("dismissCallBack invoke");
+    }
+    ..widget(SubmissionReviseCommentView(comment))
+    ..animatedFunc = (child, animation) {
+      return ScaleTransition(
+        child: child,
+        scale: Tween(begin: 0.0, end: 1.0).animate(animation),
+      );
+    }
+    ..show();
 }

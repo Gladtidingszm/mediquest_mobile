@@ -281,6 +281,52 @@ class ApiClient {
     return answers;
   }
 
+  Future<List<SubmissionAnswer>> reSubmitPatientResponses(
+      {@required SubmissionRequestBody submission}) async {
+    print('RESubmission Api');
+    print(submission?.toJson());
+    List<SubmissionAnswer> answers = List();
+
+    _populateHeaders(userToken: SharedPreferencesUtil.getAuthToken());
+    try {
+      //var endPoint = _baseUrl+'questionnaire/submit';
+      var endPoint = '${_baseUrl}submissions/send-revision';
+      print(endPoint);
+      print(_headers);
+      print(convert.JsonEncoder().convert(submission));
+      var response = await _inner
+          .put(endPoint,
+              headers: _headers,
+              body: convert.JsonEncoder().convert(submission))
+          .timeout(Duration(seconds: 30));
+
+      if (response.statusCode == 200) {
+        print("*************");
+
+        print("SUCCESS");
+        print("*************");
+        print(response.statusCode);
+        print("*************");
+
+        var payload = ApiPayload.fromJson(convert.json.decode(response.body));
+
+        answers = payload.payload
+            .map<SubmissionAnswer>((json) => SubmissionAnswer.fromJson(json))
+            .toList();
+        print("length: " + answers.length.toString());
+
+        return answers;
+      } else {
+        print(response.statusCode);
+        print(response.body);
+      }
+    } catch (e) {
+      print(e);
+    }
+
+    return answers;
+  }
+
   Future<Questionnaire> fillInQuestionnaire(
       {@required Questionnaire questionnaire}) async {
     print('Filling in Questionnaire Api');

@@ -1,42 +1,62 @@
-import 'package:json_annotation/json_annotation.dart';
-import 'package:mediquest_mobile/models/Institution.dart';
-import 'package:mediquest_mobile/models/Patient.dart';
-import 'package:mediquest_mobile/models/Questionnaire.dart';
-import 'package:mediquest_mobile/models/Student.dart';
+import 'Patient.dart';
+import 'Questionnaire.dart';
+import 'Student.dart';
 
-part 'Submission.g.dart';
-
-@JsonSerializable(explicitToJson: true)
 class Submission {
   int id;
-
-  Questionnaire questionnaire;
-
-  Student student;
-  Patient patient;
-
   String status;
   String comment;
-  Institution institution;
-
-  @JsonKey(name: "created_at")
-  DateTime createdAt;
-  @JsonKey(name: "updated_at")
-  DateTime updatedAt;
+  int institutionId;
+  String createdAt;
+  String updatedAt;
+  Student student;
+  Questionnaire questionnaire;
+  Patient patient;
 
   Submission(
-      this.id,
-      this.questionnaire,
-      this.student,
-      this.patient,
+      {this.id,
       this.status,
       this.comment,
-      this.institution,
+      this.institutionId,
       this.createdAt,
-      this.updatedAt);
+      this.updatedAt,
+      this.student,
+      this.questionnaire,
+      this.patient});
 
-  factory Submission.fromJson(Map<String, dynamic> json) =>
-      _$SubmissionFromJson(json);
+  Submission.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    status = json['status'];
+    comment = json['comment'];
+    institutionId = json['institution_id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    student =
+        json['student'] != null ? new Student.fromJson(json['student']) : null;
+    questionnaire = json['questionnaire'] != null
+        ? new Questionnaire.fromJson(json['questionnaire'])
+        : null;
+    patient =
+        json['patient'] != null ? new Patient.fromJson(json['patient']) : null;
+  }
 
-  Map<String, dynamic> toJson() => _$SubmissionToJson(this);
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['status'] = this.status;
+    data['comment'] = this.comment;
+    data['institution_id'] = this.institutionId;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    if (this.student != null) {
+      data['student'] = this.student.toJson();
+    }
+    if (this.questionnaire != null) {
+      data['questionnaire'] = this.questionnaire.toJson();
+    }
+    if (this.patient != null) {
+      data['patient'] = this.patient.toJson();
+    }
+    return data;
+  }
 }

@@ -185,6 +185,20 @@ class ApiClient {
     return response;
   }
 
+  Future<Response> register(RegisterRequest request) async {
+    String fullUrl = _baseUrl + "student/sign-up";
+    String token = SharedPreferencesUtil.getAuthToken();
+    _populateHeaders(userToken: token);
+    print(_headers);
+    print(fullUrl);
+    print("*******************************");
+    print(request.toJson());
+    print("******************************");
+    Future<Response> response = _inner.post(fullUrl,
+        headers: _headers, body: convert.JsonEncoder().convert(request));
+    return response;
+  }
+
   Future<Response> getAllQuestions() async {
     String fullUrl = _baseUrl + "questions/all";
     _populateHeaders(userToken: SharedPreferencesUtil.getAuthToken());

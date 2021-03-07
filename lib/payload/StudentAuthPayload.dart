@@ -9,7 +9,7 @@ class StudentAuthPayload {
   StudentAuthPayload.fromJson(Map<String, dynamic> json) {
     student =
         json['student'] != null ? new Student.fromJson(json['student']) : null;
-    accessToken = json['accessToken'];
+    accessToken = json['access_token'];
   }
 
   Map<String, dynamic> toJson() {
@@ -17,7 +17,7 @@ class StudentAuthPayload {
     if (this.student != null) {
       data['student'] = this.student.toJson();
     }
-    data['accessToken'] = this.accessToken;
+    data['access_token'] = this.accessToken;
     return data;
   }
 }

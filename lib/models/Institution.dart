@@ -18,4 +18,8 @@ class Institution {
 
   Map<String, dynamic> toJson() => _$InstitutionToJson(this);
 
+  @override
+  String toString() {
+    return 'Institution{createdAt: $createdAt, updatedAt: $updatedAt, logo: $logo, name: $name}';
+  }
 }

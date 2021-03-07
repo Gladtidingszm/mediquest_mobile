@@ -6,11 +6,12 @@ class Patient {
   String initials;
   int age;
   String sex;
-  String dob;
+
   int institutionId;
   String createdAt;
   String updatedAt;
   Submission submission;
+  int submitted;
 
   Patient(
       {this.id,
@@ -18,11 +19,11 @@ class Patient {
       this.initials,
       this.age,
       this.sex,
-      this.dob,
       this.institutionId,
       this.createdAt,
       this.updatedAt,
-      this.submission});
+      this.submission,
+      this.submitted});
 
   Patient.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -30,7 +31,8 @@ class Patient {
     initials = json['initials'];
     age = json['age'];
     sex = json['sex'];
-    dob = json['dob'];
+
+    submitted = json["submitted"];
     institutionId = json['institution_id'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
@@ -46,7 +48,7 @@ class Patient {
     data['initials'] = this.initials;
     data['age'] = this.age;
     data['sex'] = this.sex;
-    data['dob'] = this.dob;
+    data["submitted"] = this.submitted;
     data['institution_id'] = this.institutionId;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
@@ -58,7 +60,6 @@ class Patient {
 
   @override
   String toString() {
-    return 'Patient{id: $id, questionnaireId: $questionnaireId, initials: $initials, age: $age, sex: $sex, dob: $dob, institutionId: $institutionId, createdAt: $createdAt, updatedAt: $updatedAt, submission: $submission}';
+    return 'Patient{id: $id, questionnaireId: $questionnaireId, initials: $initials, age: $age, sex: $sex,  institutionId: $institutionId, createdAt: $createdAt, updatedAt: $updatedAt, submission: $submission}';
   }
 }
-

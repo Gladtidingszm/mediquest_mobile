@@ -1,43 +1,48 @@
-import 'dart:core';
-
-import 'package:json_annotation/json_annotation.dart';
-import 'package:mediquest_mobile/models/Institution.dart';
-
-part 'User.g.dart';
-
-@JsonSerializable(explicitToJson: true)
 class User {
   int id;
   String name;
   String email;
-  String nrc;
-  @JsonKey(name: "user_type")
+  String nRC;
   String userType;
-  @JsonKey(name: "email_verified_at")
-  DateTime emailVerifiesAt;
-  String password;
-  Institution institution;
-  @JsonKey(name: "remember_token")
-  String rememberToken;
-  @JsonKey(name: "created_at")
-  DateTime createdAt;
-  @JsonKey(name: "updated_at")
-  DateTime updatedAt;
+  String emailVerifiedAt;
+  String institutionId;
+  String createdAt;
+  String updatedAt;
 
   User(
-      this.id,
+      {this.id,
       this.name,
       this.email,
-      this.nrc,
+      this.nRC,
       this.userType,
-      this.emailVerifiesAt,
-      this.password,
-      this.institution,
-      this.rememberToken,
+      this.emailVerifiedAt,
+      this.institutionId,
       this.createdAt,
-      this.updatedAt);
+      this.updatedAt});
 
-  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  User.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    email = json['email'];
+    nRC = json['NRC'];
+    userType = json['user_type'];
+    emailVerifiedAt = json['email_verified_at'];
+    institutionId = json['institution_id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+  }
 
-  Map<String, dynamic> toJson() => _$UserToJson(this);
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['email'] = this.email;
+    data['NRC'] = this.nRC;
+    data['user_type'] = this.userType;
+    data['email_verified_at'] = this.emailVerifiedAt;
+    data['institution_id'] = this.institutionId;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    return data;
+  }
 }

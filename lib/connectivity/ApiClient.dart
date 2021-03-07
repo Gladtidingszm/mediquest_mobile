@@ -25,6 +25,14 @@ class ApiClient {
     'Accept': 'application/json',
   };
 
+  static Future<Response> getAllSubmissions() async {
+    String fullUrl = _baseUrl + "student/submissions";
+    _populateHeaders(userToken: SharedPreferencesUtil.getAuthToken());
+    print(fullUrl);
+    Future<Response> response = _inner.get(fullUrl, headers: _headers);
+    return response;
+  }
+
   static Future<void> _populateHeaders({@required String userToken}) async {
     // _headers['Content-Type'] = 'application/json';
     // _headers['Accept'] = 'application/json';

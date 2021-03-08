@@ -127,7 +127,7 @@ class QuestionnaireFill extends StatelessWidget {
                                         department: department,
                                         assignmentId: assignmentId);
                                     loadingDialog.hide();
-                                    Navigator.of(context).pop();
+                                    _formKey.currentState.reset();
                                   } else {
                                     print(_formKey.currentState);
                                     print('validation failed');

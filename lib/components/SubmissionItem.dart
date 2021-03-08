@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
 import 'package:mediquest_mobile/models/Submission.dart';
 import 'package:mediquest_mobile/screens/QuestionaireView.dart';
-import 'package:mediquest_mobile/screens/SubmissionProfile.dart';
 import 'package:mediquest_mobile/utils/GUIUtils.dart';
 
 import 'SubmissionReviseCommentView.dart';
@@ -61,22 +60,6 @@ class _SubmissionListItemViewState extends State<SubmissionListItemView> {
                 width: double.infinity,
                 child: Row(
                   children: <Widget>[
-                    Expanded(
-                      child: OutlineButton(
-                        color: Colors.blueAccent,
-                        child: Text(
-                          'View',
-                          style:
-                              TextStyle(color: Theme.of(context).accentColor),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context)
-                              .push(MaterialPageRoute(builder: (context) {
-                            return SubmissionProfile(widget.submission);
-                          }));
-                        },
-                      ),
-                    ),
                     const SizedBox(width: 20),
                     Expanded(
                       child: MaterialButton(

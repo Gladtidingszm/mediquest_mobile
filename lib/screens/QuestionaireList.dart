@@ -6,11 +6,16 @@ import 'package:mediquest_mobile/models/Questionnaire.dart';
 import 'package:mediquest_mobile/screens/QuestionnaireFill.dart';
 import 'package:mediquest_mobile/utils/GUIUtils.dart';
 
-class QuestionnaireList extends StatelessWidget {
+class QuestionnaireList extends StatefulWidget {
   var assignmentId;
 
   QuestionnaireList(this.assignmentId);
 
+  @override
+  _QuestionnaireListState createState() => _QuestionnaireListState();
+}
+
+class _QuestionnaireListState extends State<QuestionnaireList> {
   Widget build(BuildContext context) {
     final makeBody = Container(
       // decoration: BoxDecoration(color: Color.fromRGBO(58, 66, 86, 1.0)),
@@ -56,29 +61,34 @@ class QuestionnaireList extends StatelessWidget {
               }
               return Container();
             },
-            future: getAssignmentQuestionnaires(assignmentId),
+            future: getAssignmentQuestionnaires(widget.assignmentId),
           ),
         ),
       ),
     );
-    final topAppBar = AppBar(
-      elevation: 0.1,
-      leading: Container(),
-      backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
-      title: Text("  Questionnaires"),
-      actions: <Widget>[
-        IconButton(
-          icon: Icon(Icons.add),
-          onPressed: () {
-            showQuestionnaireFill(context, assignmentId);
-          },
-        )
-      ],
-    );
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: topAppBar,
+      appBar: AppBar(
+        elevation: 0.1,
+        leading: Container(),
+        backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
+        title: Text("  Questionnaires"),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () async {
+              showQuestionnaireFill(context, widget.assignmentId);
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.refresh_outlined),
+            onPressed: () {
+              setState(() {});
+            },
+          )
+        ],
+      ),
       body: makeBody,
 
       // bottomNavigationBar: makeBottom,

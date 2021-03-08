@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mediquest_mobile/models/Question.dart';
-import 'package:mediquest_mobile/screens/Questionaire.dart';
+import 'package:mediquest_mobile/screens/QuestionaireView.dart';
 import 'package:provider/provider.dart';
 
 class TextAnswerQuestion extends StatefulWidget {
@@ -20,7 +20,6 @@ class TextAnswerQuestion extends StatefulWidget {
 class _TextAnswerQuestionState extends State<TextAnswerQuestion> {
   @override
   Widget build(BuildContext context) {
-    print(widget.question.toJson());
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: Container(
@@ -37,6 +36,7 @@ class _TextAnswerQuestionState extends State<TextAnswerQuestion> {
                 .addAnswer(
                     response: widget.answer, questionId: widget.question.id);
           },
+          onChanged: null,
           validator: (value) =>
               value.trim().isEmpty ? 'This answer can\'t be empty' : null,
         ),

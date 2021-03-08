@@ -22,7 +22,7 @@ class QuestionaireListItem extends StatelessWidget {
             child: Icon(Icons.autorenew, color: Colors.grey),
           ),
           title: Text(
-            "Assignment:  " + questionnaire.assignmentId.toString(),
+            "Questionnaire No:  " + questionnaire.id.toString(),
             style:
                 TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold),
             overflow: TextOverflow.ellipsis,

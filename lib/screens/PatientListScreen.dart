@@ -1,5 +1,4 @@
 import 'package:cool_alert/cool_alert.dart';
-import 'package:edge_alert/edge_alert.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
@@ -8,7 +7,7 @@ import 'package:mediquest_mobile/managers/QuestionnaireManager.dart';
 import 'package:mediquest_mobile/models/Patient.dart';
 import 'package:mediquest_mobile/models/Questionnaire.dart';
 import 'package:mediquest_mobile/screens/CreatePatient.dart';
-import 'package:mediquest_mobile/screens/Questionaire.dart';
+import 'package:mediquest_mobile/screens/QuestionaireView.dart';
 import 'package:mediquest_mobile/utils/GUIUtils.dart';
 
 class PatientListScreen extends StatefulWidget {
@@ -31,6 +30,13 @@ class _PatientListScreenState extends State<PatientListScreen>
     return Scaffold(
       appBar: AppBar(
         elevation: 0.1,
+        actions: [
+          IconButton(
+              icon: Icon(Icons.refresh_outlined),
+              onPressed: () {
+                setState(() {});
+              })
+        ],
         backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
         title: Row(
           children: [
@@ -71,6 +77,15 @@ class _PatientListScreenState extends State<PatientListScreen>
                               style: TextStyle(
                                   fontSize: 13.0, fontWeight: FontWeight.bold),
                             ),
+                            trailing: patient.submitted == 1
+                                ? Text(
+                                    "Submitted",
+                                    style: TextStyle(color: Colors.green),
+                                  )
+                                : Text(
+                                    "Not Submitted",
+                                    style: TextStyle(color: Colors.redAccent),
+                                  ),
                             children: <Widget>[
                               ListTile(
                                 title: SizedBox(
@@ -83,12 +98,8 @@ class _PatientListScreenState extends State<PatientListScreen>
                                           child: FlatButton(
                                             child: Text("Questionnaire"),
                                             onPressed: () {
-                                              Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                      builder: (context) {
-                                                return QuestionnaireView(
-                                                    patient);
-                                              }));
+                                              showQuestionnaire(
+                                                  context, patient);
                                             },
                                           ),
                                         ),
@@ -100,35 +111,24 @@ class _PatientListScreenState extends State<PatientListScreen>
                                                   color: Colors.redAccent),
                                             ),
                                             onPressed: () async {
-                                              LoadingDialog loadingDialog =
-                                                  LoadingDialog(
-                                                      buildContext: context,
-                                                      loadingMessage:
-                                                          "Deleting...");
-                                              loadingDialog.show();
-                                              Patient deletedPatient =
-                                                  await QuestionnaireManager
-                                                      .instance
-                                                      .removePatient(
-                                                          patient.id);
-                                              loadingDialog.hide();
-                                              if (deletedPatient != null) {
-                                                setState(() {});
-                                                CoolAlert.show(
-                                                  context: context,
-                                                  type: CoolAlertType.success,
-                                                  confirmBtnText: "Yes",
-                                                  text: "Patient deleted",
-                                                );
-                                              } else {
-                                                CoolAlert.show(
-                                                  context: context,
-                                                  type: CoolAlertType.error,
-                                                  confirmBtnText: "Yes",
-                                                  text:
-                                                      "Patient delete failed!",
-                                                );
-                                              }
+                                              CoolAlert.show(
+                                                context: context,
+                                                barrierDismissible: true,
+                                                type: CoolAlertType.confirm,
+                                                confirmBtnText: "Yes",
+                                                cancelBtnText: "Cancel",
+                                                onCancelBtnTap: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                onConfirmBtnTap: () async {
+                                                  Navigator.of(context).pop();
+                                                  await removePatient(
+                                                      patient.id, context);
+                                                  setState(() {});
+                                                },
+                                                text:
+                                                    "Are you sure you want to clear patients!",
+                                              );
                                             },
                                           ),
                                         ),
@@ -174,33 +174,15 @@ class _PatientListScreenState extends State<PatientListScreen>
           ),
           // Floating action menu item
           Bubble(
-            title: "Clear All Patients",
+            title: "Close",
             iconColor: Colors.white,
             bubbleColor: Colors.red,
             icon: Icons.clear,
             titleStyle: TextStyle(fontSize: 16, color: Colors.white),
             onPress: () {
               _animationController.reverse();
-              CoolAlert.show(
-                context: context,
-                type: CoolAlertType.confirm,
-                confirmBtnText: "Yes",
-                cancelBtnText: "Cancel",
-                text: "Are you sure you want to clear patients!",
-              );
             },
           ), //Floating action menu item
-          Bubble(
-            title: "Submit Patients",
-            iconColor: Colors.white,
-            bubbleColor: Colors.green,
-            icon: Icons.send,
-            titleStyle: TextStyle(fontSize: 16, color: Colors.white),
-            onPress: () {
-              _animationController.reverse();
-              CoolAlert.show(context: context, type: CoolAlertType.info);
-            },
-          ),
         ],
 
         // animation controller
@@ -275,37 +257,56 @@ Future<List<Patient>> getQuestionnairePatients(int patientId) async {
   }
 }
 
-Future<Patient> removePatient(Patient patientData, BuildContext context) async {
+Future<Patient> removePatient(int patientId, BuildContext context) async {
   LoadingDialog loadingDialog =
-  LoadingDialog(buildContext: context, loadingMessage: "Removing...");
+      LoadingDialog(buildContext: context, loadingMessage: "Deleting...");
   loadingDialog.show();
-
-  Patient patient = await QuestionnaireManager().removePatient(patientData.id);
+  Patient deletedPatient =
+      await QuestionnaireManager.instance.removePatient(patientId);
   loadingDialog.hide();
-  if (patient != null) {
-    EdgeAlert.show(context,
-        title: 'Success',
-        description: 'Patient removed.',
-        icon: Icons.check_circle_outline,
-        backgroundColor: Colors.green,
-        gravity: EdgeAlert.TOP);
+  if (deletedPatient != null) {
+    CoolAlert.show(
+      context: context,
+      type: CoolAlertType.success,
+      confirmBtnText: "Yes",
+      text: "Patient deleted",
+    );
   } else {
-    {
-      EdgeAlert.show(context,
-          title: 'Failure',
-          description: 'Failed to remove patient.',
-          icon: Icons.dangerous,
-          backgroundColor: Colors.red,
-          gravity: EdgeAlert.TOP);
-    }
+    CoolAlert.show(
+      context: context,
+      type: CoolAlertType.error,
+      confirmBtnText: "Yes",
+      text: "Patient delete failed!",
+    );
   }
-  return patient;
+}
+
+YYDialog showQuestionnaire(BuildContext context, Patient patient) {
+  return YYDialog().build(context)
+    ..width = screenHeight(context) * 0.6
+    //..height = screenWidth(context)*0.99
+    ..backgroundColor = Colors.blueGrey
+    ..borderRadius = 10.0
+    ..showCallBack = () {
+      print("showCallBack invoke");
+    }
+    ..dismissCallBack = () {
+      print("dismissCallBack invoke");
+    }
+    ..widget(QuestionnaireView(patient?.submission?.id))
+    ..animatedFunc = (child, animation) {
+      return ScaleTransition(
+        child: child,
+        scale: Tween(begin: 0.0, end: 1.0).animate(animation),
+      );
+    }
+    ..show();
 }
 
 YYDialog showCreatePatient(BuildContext context, Questionnaire questionnaire) {
   return YYDialog().build(context)
     ..width = screenHeight(context) * 0.6
-  //..height = screenWidth(context)*0.99
+    //..height = screenWidth(context)*0.99
     ..backgroundColor = Colors.blueGrey
     ..borderRadius = 10.0
     ..showCallBack = () {
@@ -323,4 +324,5 @@ YYDialog showCreatePatient(BuildContext context, Questionnaire questionnaire) {
     }
     ..show();
 }
+
 

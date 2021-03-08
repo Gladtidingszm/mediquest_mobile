@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:loading_dialog/loading_dialog.dart';
 import 'package:mediquest_mobile/connectivity/ApiClient.dart';
 import 'package:mediquest_mobile/managers/QuestionnaireManager.dart';
-import 'package:mediquest_mobile/models/Patient.dart';
 import 'package:mediquest_mobile/models/Question.dart';
 import 'package:mediquest_mobile/models/SubmissionAnswer.dart';
 import 'package:mediquest_mobile/models/request/Answer.dart';
@@ -12,24 +11,23 @@ import 'package:mediquest_mobile/utils/QuestionGuiFetcher.dart';
 import 'package:provider/provider.dart';
 
 class QuestionnaireView extends StatelessWidget {
-  Patient patient;
+  int submissionId;
 
-  QuestionnaireView(this.patient); //given the student,patient
-  //create the submission
+  QuestionnaireView(this.submissionId);
+
   @override
   Widget build(BuildContext context) {
-    final _formKey = new GlobalKey<FormState>();
+    final _questionnaireFormKey = new GlobalKey<FormState>();
 
     return ChangeNotifierProvider<QuestionnaireAnswersProvider>(
       create: (context) => QuestionnaireAnswersProvider(),
-      builder: (context, child) => Scaffold(
-        appBar: AppBar(
-          elevation: 0.1,
-          backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
-        ),
-        body: SingleChildScrollView(
-          child: Container(
-            margin: EdgeInsets.all(20),
+      builder: (context, child) => SingleChildScrollView(
+        child: Container(
+          // height: screenHeight(context)*.9,
+          margin: EdgeInsets.all(5),
+          color: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: FutureBuilder(
               builder: (context, AsyncSnapshot snap) {
                 switch (snap.connectionState) {
@@ -46,18 +44,21 @@ class QuestionnaireView extends StatelessWidget {
                   case ConnectionState.done:
                     if (snap.hasData && snap.data.length != 0) {
                       return Form(
-                        key: _formKey,
+                        key: _questionnaireFormKey,
                         child: Column(
                           children: [
-                            ListView.builder(
-                              itemCount: snap.data.length,
-                              shrinkWrap: true,
-                              primary: false,
-                              itemBuilder: (context, index) {
-                                Question question = snap.data[index];
-                                return QuestionGUIFetcher.getQuestionGUI(
-                                    question);
-                              },
+                            SingleChildScrollView(
+                              primary: true,
+                              child: ListView.builder(
+                                itemCount: snap.data.length,
+                                shrinkWrap: true,
+                                primary: false,
+                                itemBuilder: (context, index) {
+                                  Question question = snap.data[index];
+                                  return QuestionGUIFetcher.getQuestionGUI(
+                                      question);
+                                },
+                              ),
                             ),
                             Row(
                               children: <Widget>[
@@ -68,16 +69,18 @@ class QuestionnaireView extends StatelessWidget {
                                     style: TextStyle(color: Colors.white),
                                   ),
                                   onPressed: () async {
-                                    if (_formKey.currentState.validate()) {
-                                      _formKey.currentState.save();
+                                    if (_questionnaireFormKey.currentState
+                                        .validate()) {
+                                      _questionnaireFormKey.currentState.save();
 
-                                      List<SubmissionAnswer> answers = await submit(
-                                          Provider.of<QuestionnaireAnswersProvider>(
-                                                  context,
-                                                  listen: false)
-                                              ._answers,
-                                          patient.submission.id,
-                                          context);
+                                      List<SubmissionAnswer> answers =
+                                          await submitRevision(
+                                              Provider.of<QuestionnaireAnswersProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  ._answers,
+                                              submissionId,
+                                              context);
                                     }
 
                                     Provider.of<QuestionnaireAnswersProvider>(
@@ -99,7 +102,7 @@ class QuestionnaireView extends StatelessWidget {
                                         color: Theme.of(context).accentColor),
                                   ),
                                   onPressed: () {
-                                    _formKey.currentState.reset();
+                                    _questionnaireFormKey.currentState.reset();
                                   },
                                 ),
                               ],
@@ -141,15 +144,15 @@ class QuestionnaireView extends StatelessWidget {
   }
 }
 
-Future<List<SubmissionAnswer>> submit(
+Future<List<SubmissionAnswer>> submitRevision(
     List<Answer> answers, submissionId, BuildContext context) async {
-  print("submitting answers");
+  print("resubmitting answers");
   List<SubmissionAnswer> submissionAnswers;
   LoadingDialog dialog =
       LoadingDialog(buildContext: context, loadingMessage: "Submitting ");
   dialog.show();
 
-  submissionAnswers = await ApiClient().submitPatientResponses(
+  submissionAnswers = await ApiClient().reSubmitPatientResponses(
       submission:
           SubmissionRequestBody(submissionId: submissionId, answers: answers));
   dialog.hide();
@@ -158,10 +161,11 @@ Future<List<SubmissionAnswer>> submit(
     print("on data return submission not null");
     EdgeAlert.show(context,
         title: 'Success',
-        description: 'Responses submitted.',
+        description: 'Responses resubmitted.',
         icon: Icons.check_circle_outline,
         backgroundColor: Colors.green,
         gravity: EdgeAlert.TOP);
+    Navigator.pop(context);
     return submissionAnswers;
   } else {
     print(" on data return submission null ");

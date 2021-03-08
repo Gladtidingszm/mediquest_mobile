@@ -108,8 +108,17 @@ Future<Widget> getNextScreen() async {
   String token = SharedPreferencesUtil.getAuthToken();
   bool isValidToken = await AuthenticationManager.validateToken(token);
   if (token == null || token.isEmpty || !isValidToken) {
+    print("Invalid or null Token, REDIRECTING");
+    print("*************************************************");
+    print(token);
+    print("*************************************************");
+
     return LoginScreen();
   } else {
+    print("Valid Token, REDIRECTING");
+    print("*************************************************");
+    print(token);
+    print("*************************************************");
     return AssignmentList();
   }
 }

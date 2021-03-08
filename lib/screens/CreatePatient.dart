@@ -24,7 +24,7 @@ class _CreatePatientState extends State<CreatePatient> {
   final _formKey = new GlobalKey<FormState>();
   bool hidePass = true;
   String _initials;
-  DateTime dateOfBirth = DateTime(1900, 12, 12);
+
   String _sex;
   int age;
 
@@ -103,18 +103,7 @@ class _CreatePatientState extends State<CreatePatient> {
                         SizedBox(height: 10),
 
                         //DOB
-                        FormBuilderDateTimePicker(
-                          name: "here",
-                          onSaved: (value) => dateOfBirth = value,
-                          initialDatePickerMode: null,
-                          initialEntryMode: DatePickerEntryMode.calendar,
-                          decoration: InputDecoration(
-                            icon: Icon(Icons.ac_unit_sharp),
-                          ),
-                          validator: (value) => value == null
-                              ? 'Date of birth can\'t be empty'
-                              : null,
-                        ),
+
                         SizedBox(height: 10),
                         Row(
                           children: <Widget>[
@@ -134,7 +123,6 @@ class _CreatePatientState extends State<CreatePatient> {
                                       sex: _sex,
                                       questionnaireId: widget.questionnnaire.id,
                                       age: age,
-                                      dob: dateOfBirth.toString(),
                                       createdAt: DateTime.now().toString(),
                                       initials: _initials,
                                       institutionId:
@@ -145,7 +133,6 @@ class _CreatePatientState extends State<CreatePatient> {
                                         await addPatient(patient, context);
                                     print(newPatient?.toJson());
                                     Navigator.of(context).pop();
-                                    setState(() {});
                                   } else {
                                     print(_formKey.currentState);
                                     print('validation failed');

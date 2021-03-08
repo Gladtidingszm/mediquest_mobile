@@ -1,25 +1,57 @@
+import 'package:edge_alert/edge_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter_login/flutter_login.dart';
-import 'package:mediquest_mobile/Main.dart';
 import 'package:mediquest_mobile/managers/AuthenticationManager.dart';
 import 'package:mediquest_mobile/payload/StudentAuthPayload.dart';
+import 'package:mediquest_mobile/screens/AssignmentList.dart';
 import 'package:mediquest_mobile/utils/SharedPreferncesUtil.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   static const routeName = '/auth';
+
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  StudentAuthPayload authenticationPayload;
 
   Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
 
   Future<String> _loginUser(LoginData data) async {
-    StudentAuthPayload authenticationPayload =
-    await AuthenticationManager().login(data.name, data.password);
+    authenticationPayload =
+        await AuthenticationManager.login(data.name, data.password);
     print("done");
-    print(authenticationPayload.student.toJson());
-    SharedPreferencesUtil.setCurrentStudent(authenticationPayload.student);
-    SharedPreferencesUtil.setAuthToken(
-        token: authenticationPayload.accessToken);
-    print("auth token stored as:   " + SharedPreferencesUtil.getAuthToken());
+    if (authenticationPayload != null &&
+        authenticationPayload.student != null &&
+        authenticationPayload.accessToken != null) {
+      print(authenticationPayload.student.toJson());
+      SharedPreferencesUtil.setCurrentStudent(authenticationPayload.student);
+      SharedPreferencesUtil.setAuthToken(
+          token: authenticationPayload.accessToken);
+      print("auth token stored as:   " + SharedPreferencesUtil.getAuthToken());
+    } else {}
+  }
+
+  Future<String> _register(String computerNumber, String password) async {
+    authenticationPayload =
+        await AuthenticationManager.register(computerNumber, password);
+    print("done");
+    if (authenticationPayload != null &&
+        authenticationPayload.student != null &&
+        authenticationPayload.accessToken != null) {
+      print(authenticationPayload.student.toJson());
+      SharedPreferencesUtil.setCurrentStudent(authenticationPayload.student);
+
+      SharedPreferencesUtil.setAuthToken(
+          token: authenticationPayload.accessToken);
+
+      print("auth token stored as:   " +
+          SharedPreferencesUtil.getAuthToken().toString());
+    } else {
+      print("login failed");
+    }
   }
 
   Future<String> _recoverPassword(String name) {
@@ -33,14 +65,12 @@ class LoginScreen extends StatelessWidget {
     SharedPreferencesUtil.setAuthToken(token: null);
   }
 
-
   @override
   Widget build(BuildContext context) {
     final inputBorder = BorderRadius.vertical(
       bottom: Radius.circular(10.0),
       top: Radius.circular(20.0),
     );
-
 
     return FlutterLogin(
       title: "MediQuest",
@@ -49,13 +79,12 @@ class LoginScreen extends StatelessWidget {
       titleTag: "Okay",
 
       emailValidator: (value) {
-        if (!value.contains('@') | | !value.endsWith ('.com')
-        ) {
-        return "Email must contain '@' and end with '.com'";
+        if (value.isEmpty) {
+          return "Please enter your computer number";
         }
-        return
-        null;
+        return null;
       },
+
       passwordValidator: (value) {
         if (value.isEmpty) {
           return 'Password is empty';
@@ -72,12 +101,27 @@ class LoginScreen extends StatelessWidget {
         print('Signup info');
         print('Name: ${loginData.name}');
         print('Password: ${loginData.password}');
-        return _loginUser(loginData);
+        return _register(loginData.name, loginData.password);
       },
       onSubmitAnimationCompleted: () {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => MyApp(),
-        ));
+        print("animation complete");
+        if (authenticationPayload != null &&
+            authenticationPayload.student != null &&
+            authenticationPayload.accessToken != null) {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => AssignmentList(),
+          ));
+        } else {
+          EdgeAlert.show(context,
+              title: 'Failure',
+              description: 'Failed to authenticate.',
+              icon: Icons.dangerous,
+              backgroundColor: Colors.red,
+              gravity: EdgeAlert.TOP);
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => LoginScreen(),
+          ));
+        }
       },
       onRecoverPassword: (name) {
         print('Recover password info');
@@ -86,6 +130,7 @@ class LoginScreen extends StatelessWidget {
         // Show new password dialog
       },
       showDebugButtons: false,
+      // theme: LoginTheme(),
     );
   }
 }

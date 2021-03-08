@@ -148,9 +148,20 @@ class ApiClient {
     LoginRequest loginRequest =
         LoginRequest(email: username, password: password);
 
-    Future<Response> response = _inner.post(fullUrl,
-        headers: _headers, body: convert.JsonEncoder().convert(loginRequest));
-    return response;
+    try {
+      Future<Response> response = _inner
+          .post(fullUrl,
+              headers: _headers,
+              body: convert.JsonEncoder().convert(loginRequest))
+          .timeout(_timeout, onTimeout: () {
+        return null;
+      });
+      return response;
+    } catch (e) {
+      print("EXCEPTION CAUGHT");
+      print(e);
+      return null;
+    }
   }
 
   Future<Response> register(RegisterRequest request) async {
@@ -162,8 +173,12 @@ class ApiClient {
     print("*******************************");
     print(request.toJson());
     print("******************************");
-    Future<Response> response = _inner.post(fullUrl,
-        headers: _headers, body: convert.JsonEncoder().convert(request));
+    Future<Response> response = _inner
+        .post(fullUrl,
+            headers: _headers, body: convert.JsonEncoder().convert(request))
+        .timeout(_timeout, onTimeout: () {
+      return null;
+    });
     return response;
   }
 

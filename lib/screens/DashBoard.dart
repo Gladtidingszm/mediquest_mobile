@@ -89,7 +89,7 @@ class _DashBoardState extends State<DashBoard>
                             )))
                       ]),
                 ), onTap: () {
-              AppNavigator.navigateTo(AppRoute.SUBMISSIONS, context);
+              //AppNavigator.navigateTo(AppRoute.SUBMISSIONS, context);
             }),
             _buildTile(
               Padding(

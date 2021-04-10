@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:mediquest_mobile/models/Question.dart';
-import 'package:mediquest_mobile/screens/Questionaire.dart';
+import 'package:mediquest_mobile/models/QuestionAnswersProvider.dart';
 import 'package:provider/provider.dart';
 
 class DateAnswerQuestion extends StatefulWidget {
@@ -25,13 +25,14 @@ class _DateAnswerQuestionState extends State<DateAnswerQuestion> {
         child: FormBuilderDateTimePicker(
           name: 'date',
           initialValue: widget.initialValue,
-          enabled: widget.initialValue == null ? true : false,
-          inputType: InputType.both,
+          enabled: true,
+          inputType: InputType.date,
+          enableInteractiveSelection: true,
           decoration: InputDecoration(
             labelText: widget.question?.questionText,
           ),
           initialTime: null,
-          pickerType: PickerType.material,
+          pickerType: PickerType.cupertino,
           onSaved: (newValue) {
             widget.answer = newValue.toString();
             Provider.of<QuestionnaireAnswersProvider>(context, listen: false)

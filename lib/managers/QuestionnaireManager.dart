@@ -26,11 +26,15 @@ class QuestionnaireManager {
       ApiPayload payload;
 
       try {
+        print("***********************************");
+        print(response.statusCode);
+        print("***********************************");
+
         data = jsonDecode(response.body.toString());
 
         payload = ApiPayload.fromJson(data);
       } catch (e) {
-        print(e.toString());
+        print("HERE " + e.toString());
       }
 
       if (payload.success) {
@@ -41,6 +45,11 @@ class QuestionnaireManager {
             .map<Questionnaire>((json) => Questionnaire.fromJson(json))
             .toList();
         print("length: " + questionnaires.length.toString());
+        print(
+            "******************************************************************");
+        print(payload.payload);
+        print(
+            "*******************************************************************");
       } else {
         print("payload failed:  " + payload.message);
       }
@@ -112,9 +121,9 @@ class QuestionnaireManager {
       if (payload.success) {
         //convert
         print("converting");
-        print(payload.payload);
+        print(payload.payload.toString());
         try {
-          patients = payload.payload["result"]
+          patients = payload.payload
               .map<Patient>((json) => Patient.fromJson(json))
               .toList();
         } catch (e) {
@@ -150,6 +159,9 @@ class QuestionnaireManager {
 
         if (patient != null) {
           print("patient not null  ");
+          print("*******************************************");
+          print(patient.toJson());
+          print("*******************************************");
           return patient;
         } else {
           print("patient null ");

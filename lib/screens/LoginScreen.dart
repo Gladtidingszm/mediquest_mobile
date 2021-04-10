@@ -73,8 +73,9 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     return FlutterLogin(
-      title: "MediQuest",
-      //  logo: 'assets/images/ecorp.png',
+      title: "LMMU",
+      logo: 'assets/images/lmmu.png',
+
       logoTag: "Suit",
       titleTag: "Okay",
 
@@ -84,6 +85,9 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         return null;
       },
+      messages: LoginMessages(
+        usernameHint: "Username",
+      ),
 
       passwordValidator: (value) {
         if (value.isEmpty) {
@@ -129,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return _recoverPassword(name);
         // Show new password dialog
       },
-      showDebugButtons: false,
+
       // theme: LoginTheme(),
     );
   }

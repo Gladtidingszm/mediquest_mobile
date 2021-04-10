@@ -13,7 +13,7 @@ class SubmissionReviseCommentView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(1.0),
         child: Card(
           elevation: 2,
           shadowColor: Colors.grey,

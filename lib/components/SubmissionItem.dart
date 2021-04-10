@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
 import 'package:mediquest_mobile/models/Submission.dart';
-import 'package:mediquest_mobile/screens/QuestionaireView.dart';
+import 'package:mediquest_mobile/screens/QuestionnaireRevisionView.dart';
 import 'package:mediquest_mobile/utils/GUIUtils.dart';
 
 import 'SubmissionReviseCommentView.dart';
@@ -113,7 +113,7 @@ YYDialog showQuestionnaire(BuildContext context, int submissionId) {
     ..dismissCallBack = () {
       print("dismissCallBack invoke");
     }
-    ..widget(QuestionnaireView(submissionId))
+    ..widget(QuestionnaireViewRevision(submissionId))
     ..animatedFunc = (child, animation) {
       return ScaleTransition(
         child: child,

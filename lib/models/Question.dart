@@ -2,8 +2,8 @@ class Question {
   int id;
   String questionText;
   String options;
-  int isOpenText;
-  int isMultipleSelection;
+  bool isOpenText;
+  bool isMultipleSelection;
   int selectionLimit;
   String answerDatatype;
   int institutionId;

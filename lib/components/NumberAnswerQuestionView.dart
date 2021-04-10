@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mediquest_mobile/models/Question.dart';
-import 'package:mediquest_mobile/screens/Questionaire.dart';
+import 'package:mediquest_mobile/models/QuestionAnswersProvider.dart';
 import 'package:provider/provider.dart';
 
 class NumberAnswerQuestionView extends StatelessWidget {

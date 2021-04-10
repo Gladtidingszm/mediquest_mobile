@@ -11,7 +11,7 @@ class Patient {
   String createdAt;
   String updatedAt;
   Submission submission;
-  int submitted;
+  bool submitted;
 
   Patient(
       {this.id,

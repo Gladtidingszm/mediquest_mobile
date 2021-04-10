@@ -9,9 +9,8 @@ import 'package:mediquest_mobile/models/Question.dart';
 class QuestionGUIFetcher {
   static getQuestionGUI(Question question) {
     String dataType = question?.answerDatatype;
-    bool isMultipleSelection =
-        question?.isMultipleSelection == 0 ? false : true;
-    bool isOpenText = question?.isOpenText == 0 ? false : true;
+    bool isMultipleSelection = question?.isMultipleSelection;
+    bool isOpenText = question?.isOpenText;
     if (dataType == constants.dateAnswerQuestion) {
       return DateAnswerQuestion(question);
     } else if (dataType == constants.floatAnswerQuestion ||

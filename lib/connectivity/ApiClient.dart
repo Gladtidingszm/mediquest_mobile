@@ -17,7 +17,7 @@ import 'package:mediquest_mobile/utils/SharedPreferncesUtil.dart';
 class ApiClient {
   static final Client _inner = Client();
   static String _baseUrl = constants.baseUrl;
-  static final Duration _timeout = Duration(seconds: 20);
+  static final Duration _timeout = Duration(seconds: 50);
 
   static Map<String, String> _headers = {
     'Content-Type': 'application/json',

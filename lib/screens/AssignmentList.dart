@@ -3,6 +3,7 @@ import 'package:mediquest_mobile/components/AssignmentItemView.dart';
 import 'package:mediquest_mobile/managers/AssignmentManager.dart';
 import 'package:mediquest_mobile/managers/AuthenticationManager.dart';
 import 'package:mediquest_mobile/models/Assignment.dart';
+import 'package:mediquest_mobile/screens/SubmissionsScreen.dart';
 
 class AssignmentList extends StatefulWidget {
 
@@ -84,11 +85,10 @@ class _AssignmentListState extends State<AssignmentList> {
               value: "",
               child: FlatButton(
                 child: Text('Logout'),
-                onPressed: () async {
-                  AuthenticationManager.logout(context: context);
-                },
+                onPressed: () async {},
               ),
             ),
+
           ],
         ),
       ],

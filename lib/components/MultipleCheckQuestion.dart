@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:mediquest_mobile/models/Question.dart';
-import 'package:mediquest_mobile/screens/Questionaire.dart';
+import 'package:mediquest_mobile/models/QuestionAnswersProvider.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -26,7 +26,7 @@ class MultipleSelectQuestion extends StatefulWidget {
 }
 
 class _MultipleSelectQuestionState extends State<MultipleSelectQuestion> {
-
+  bool enabled = true;
 
   @override
   Widget build(BuildContext context) {
@@ -44,14 +44,19 @@ class _MultipleSelectQuestionState extends State<MultipleSelectQuestion> {
             labelStyle: TextStyle(fontSize: 25),
           ),
           initialValue: widget.initialValue,
-          enabled: widget.initialValue == null ? true : false,
+          enabled: enabled,
           name: ' ',
           options: optionsView,
-          validator: (value) => value == null || value.length == 0
-              ? 'This answer can\'t be empty'
-              : null,
+          validator: (value) {
+            return (value == null || value.length == 0)
+                ? 'This answer can\'t be empty'
+                : (value.length > widget.maxSelect)
+                    ? "Max limit is ${widget.maxSelect}"
+                    : null;
+          },
           onSaved: (newValue) {
-            widget.answer = newValue.join(",");
+            widget.answer = newValue.join(",").trim();
+            print(widget.answer);
             Provider.of<QuestionnaireAnswersProvider>(context, listen: false)
                 .addAnswer(
                     response: widget.answer, questionId: widget.question.id);

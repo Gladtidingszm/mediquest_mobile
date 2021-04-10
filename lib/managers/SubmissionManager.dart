@@ -90,6 +90,7 @@ class SubmissionManager {
       if (payload.success) {
         print("payload success");
         print("converting");
+
         try {
           submissions = payload.payload.map<Submission>((json) {
             Submission submission = Submission.fromJson(json);

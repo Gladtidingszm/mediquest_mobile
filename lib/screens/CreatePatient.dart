@@ -33,133 +33,135 @@ class _CreatePatientState extends State<CreatePatient> {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(2.0),
         child: Card(
           elevation: 2,
           shadowColor: Colors.grey,
           child: SingleChildScrollView(
             child: Form(
               key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Center(
-                    child: Text(
-                      'Patient Registration',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w300,
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Center(
+                      child: Text(
+                        'Patient Registration',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w300,
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Column(
-                      children: <Widget>[
-                        // textfield for the name session and so on
-                        SizedBox(height: 10),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'initials',
-                            icon: Icon(Icons.mail),
-                          ),
-                          validator: (value) =>
-                              value.isEmpty ? 'Initials can\'t be empty' : null,
-                          onSaved: (value) => _initials = value.trim(),
-                        ),
-                        SizedBox(height: 10),
-                        //sex
-                        Container(
-                          child: FormBuilderRadioGroup(
-                            options: [
-                              FormBuilderFieldOption(value: "Male"),
-                              FormBuilderFieldOption(value: "Female"),
-                            ],
-                            initialValue: "",
+                    Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        children: <Widget>[
+                          // textfield for the name session and so on
+                          SizedBox(height: 10),
+                          TextFormField(
                             decoration: InputDecoration(
-                                icon: Icon(Icons.workspaces_filled)),
-                            onSaved: (value) {
-                              _sex = value;
-                            },
-                            validator: (value) {
-                              return value.toString().isEmpty
-                                  ? "Sex can\'t be null"
-                                  : null;
-                            },
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        //age
-                        TextFormField(
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: 'Age',
-                            icon: Icon(Icons.accessibility),
-                          ),
-                          onSaved: (value) => age = int.parse(value),
-                          validator: (value) =>
-                              value.isEmpty ? 'Age can\'t be empty' : null,
-                        ),
-                        SizedBox(height: 10),
-
-                        //DOB
-
-                        SizedBox(height: 10),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: MaterialButton(
-                                color: Theme.of(context).accentColor,
-                                child: const Text(
-                                  'Submit',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                onPressed: () async {
-                                  if (_formKey.currentState.validate()) {
-                                    _formKey.currentState.save();
-                                    print(_formKey.currentState);
-                                    Patient patient = Patient(
-                                      updatedAt: DateTime.now().toString(),
-                                      sex: _sex,
-                                      questionnaireId: widget.questionnnaire.id,
-                                      age: age,
-                                      createdAt: DateTime.now().toString(),
-                                      initials: _initials,
-                                      institutionId:
-                                          widget.questionnnaire.institutionId,
-                                    );
-
-                                    Patient newPatient =
-                                        await addPatient(patient, context);
-                                    print(newPatient?.toJson());
-                                    Navigator.of(context).pop();
-                                  } else {
-                                    print(_formKey.currentState);
-                                    print('validation failed');
-                                  }
-                                },
-                              ),
+                              labelText: 'initials',
                             ),
-                            const SizedBox(width: 20),
-                            Expanded(
-                              child: OutlineButton(
-                                color: Theme.of(context).accentColor,
-                                child: Text(
-                                  'Reset',
-                                  style: TextStyle(
-                                      color: Theme.of(context).accentColor),
-                                ),
-                                onPressed: () {
-                                  _formKey.currentState.reset();
-                                },
-                              ),
+                            validator: (value) => value.isEmpty
+                                ? 'Initials can\'t be empty'
+                                : null,
+                            onSaved: (value) => _initials = value.trim(),
+                          ),
+                          SizedBox(height: 10),
+                          //sex
+                          Container(
+                            child: FormBuilderRadioGroup(
+                              options: [
+                                FormBuilderFieldOption(value: "Male"),
+                                FormBuilderFieldOption(value: "Female"),
+                              ],
+                              initialValue: "",
+                              decoration: InputDecoration(),
+                              onSaved: (value) {
+                                _sex = value;
+                              },
+                              validator: (value) {
+                                return value.toString().isEmpty
+                                    ? "Sex can\'t be null"
+                                    : null;
+                              },
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                          SizedBox(height: 10),
+                          //age
+                          TextFormField(
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'Age',
+                            ),
+                            onSaved: (value) => age = int.parse(value),
+                            validator: (value) =>
+                                value.isEmpty ? 'Age can\'t be empty' : null,
+                          ),
+                          SizedBox(height: 10),
+
+                          //DOB
+
+                          SizedBox(height: 10),
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: MaterialButton(
+                                  color: Theme.of(context).accentColor,
+                                  child: const Text(
+                                    'Submit',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onPressed: () async {
+                                    if (_formKey.currentState.validate()) {
+                                      _formKey.currentState.save();
+                                      print(_formKey.currentState);
+                                      Patient patient = Patient(
+                                        updatedAt: DateTime.now().toString(),
+                                        sex: _sex,
+                                        questionnaireId:
+                                            widget.questionnnaire.id,
+                                        age: age,
+                                        createdAt: DateTime.now().toString(),
+                                        initials: _initials,
+                                        institutionId:
+                                            widget.questionnnaire.institutionId,
+                                      );
+
+                                      Patient newPatient =
+                                          await addPatient(patient, context);
+                                      print(newPatient?.toJson());
+                                      Navigator.of(context).pop();
+                                    } else {
+                                      print(_formKey.currentState);
+                                      print('validation failed');
+                                    }
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                child: OutlineButton(
+                                  color: Theme.of(context).accentColor,
+                                  child: Text(
+                                    'Reset',
+                                    style: TextStyle(
+                                        color: Theme.of(context).accentColor),
+                                  ),
+                                  onPressed: () {
+                                    _formKey.currentState.reset();
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

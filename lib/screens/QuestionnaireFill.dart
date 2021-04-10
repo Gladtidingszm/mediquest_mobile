@@ -26,135 +26,135 @@ class QuestionnaireFill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(2.0),
         child: Card(
           elevation: 2,
           shadowColor: Colors.grey,
           child: SingleChildScrollView(
             child: Form(
               key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Center(
-                    child: Text(
-                      'Fill In Question',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w300,
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Center(
+                      child: Text(
+                        'Fill In Question',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w300,
+                        ),
                       ),
                     ),
-                  ),
-                  TextFormField(
-                    keyboardType: TextInputType.text,
-                    controller: TextEditingController(),
-                    decoration: InputDecoration(
-                      labelText: 'Mentor',
-                      icon: Icon(Icons.accessibility),
+                    TextFormField(
+                      keyboardType: TextInputType.text,
+                      controller: TextEditingController(),
+                      decoration: InputDecoration(
+                        labelText: 'Mentor',
+                      ),
+                      onSaved: (value) => mentor = (value),
+                      validator: (value) =>
+                          value.isEmpty ? 'Mentor can\'t be empty' : null,
                     ),
-                    onSaved: (value) => mentor = (value),
-                    validator: (value) =>
-                        value.isEmpty ? 'Mentor can\'t be empty' : null,
-                  ),
-                  FormBuilderDateTimePicker(
-                    name: 'date',
+                    FormBuilderDateTimePicker(
+                      name: 'date',
 
-                    inputType: InputType.both,
-                    decoration: const InputDecoration(
-                      labelText: 'Start rotation date',
-                      icon: Icon(Icons.accessibility),
-                    ),
+                      inputType: InputType.both,
+                      decoration: const InputDecoration(
+                        labelText: 'Start rotation date',
+                      ),
 
-                    pickerType: PickerType.cupertino,
-                    onSaved: (value) {
-                      startOfRotation = value.toString();
-                    },
-                    validator: (value) {
-                      return value == null
-                          ? "Start of rotation  can\'t be empty"
-                          : null;
-                    },
-                    controller: TextEditingController(),
-                    //locale: Locale.fromSubtags(languageCode: 'fr'),
-                  ),
-                  TextFormField(
-                    keyboardType: TextInputType.text,
-                    controller: TextEditingController(),
-                    decoration: InputDecoration(
-                      labelText: 'Institution',
-                      icon: Icon(Icons.accessibility),
+                      pickerType: PickerType.cupertino,
+                      onSaved: (value) {
+                        startOfRotation = value.toString();
+                      },
+                      validator: (value) {
+                        return value == null
+                            ? "Start of rotation  can\'t be empty"
+                            : null;
+                      },
+                      controller: TextEditingController(),
+                      //locale: Locale.fromSubtags(languageCode: 'fr'),
                     ),
-                    onSaved: (value) => institution = (value),
-                    validator: (value) =>
-                        value.isEmpty ? 'Institution can\'t be empty' : null,
-                  ),
-                  TextFormField(
-                    controller: TextEditingController(),
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                      labelText: 'Department',
-                      icon: Icon(Icons.accessibility),
+                    TextFormField(
+                      keyboardType: TextInputType.text,
+                      controller: TextEditingController(),
+                      decoration: InputDecoration(
+                        labelText: 'Institution',
+                      ),
+                      onSaved: (value) => institution = (value),
+                      validator: (value) =>
+                          value.isEmpty ? 'Institution can\'t be empty' : null,
                     ),
-                    onSaved: (value) => department = (value),
-                    validator: (value) =>
-                        value.isEmpty ? 'Department can\'t be empty' : null,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: MaterialButton(
-                                color: Theme.of(context).accentColor,
-                                child: const Text(
-                                  'Submit',
-                                  style: TextStyle(color: Colors.white),
+                    TextFormField(
+                      controller: TextEditingController(),
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        labelText: 'Department',
+                      ),
+                      onSaved: (value) => department = (value),
+                      validator: (value) =>
+                          value.isEmpty ? 'Department can\'t be empty' : null,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: MaterialButton(
+                                  color: Theme.of(context).accentColor,
+                                  child: const Text(
+                                    'Submit',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onPressed: () async {
+                                    if (_formKey.currentState.validate()) {
+                                      _formKey.currentState.save();
+                                      LoadingDialog loadingDialog =
+                                          LoadingDialog(
+                                              buildContext: context,
+                                              loadingMessage: "Filling...");
+                                      loadingDialog.show();
+                                      await sendQuestionnaire(
+                                          context: context,
+                                          startOfRotation: startOfRotation,
+                                          institution: institution,
+                                          mentor: mentor,
+                                          department: department,
+                                          assignmentId: assignmentId);
+                                      loadingDialog.hide();
+                                      _formKey.currentState.reset();
+                                    } else {
+                                      print(_formKey.currentState);
+                                      print('validation failed');
+                                    }
+                                  },
                                 ),
-                                onPressed: () async {
-                                  if (_formKey.currentState.validate()) {
-                                    _formKey.currentState.save();
-                                    LoadingDialog loadingDialog = LoadingDialog(
-                                        buildContext: context,
-                                        loadingMessage: "Filling...");
-                                    loadingDialog.show();
-                                    await sendQuestionnaire(
-                                        context: context,
-                                        startOfRotation: startOfRotation,
-                                        institution: institution,
-                                        mentor: mentor,
-                                        department: department,
-                                        assignmentId: assignmentId);
-                                    loadingDialog.hide();
+                              ),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                child: OutlineButton(
+                                  color: Theme.of(context).accentColor,
+                                  child: Text(
+                                    'Reset',
+                                    style: TextStyle(
+                                        color: Theme.of(context).accentColor),
+                                  ),
+                                  onPressed: () {
                                     _formKey.currentState.reset();
-                                  } else {
-                                    print(_formKey.currentState);
-                                    print('validation failed');
-                                  }
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 20),
-                            Expanded(
-                              child: OutlineButton(
-                                color: Theme.of(context).accentColor,
-                                child: Text(
-                                  'Reset',
-                                  style: TextStyle(
-                                      color: Theme.of(context).accentColor),
+                                  },
                                 ),
-                                onPressed: () {
-                                  _formKey.currentState.reset();
-                                },
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

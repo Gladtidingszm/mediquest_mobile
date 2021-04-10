@@ -11,14 +11,13 @@ import 'package:mediquest_mobile/models/request/SubmissionRequestBody.dart';
 import 'package:mediquest_mobile/utils/QuestionGuiFetcher.dart';
 import 'package:provider/provider.dart';
 
-class QuestionnaireView extends StatelessWidget {
+class QuestionnaireViewRevision extends StatelessWidget {
   int submissionId;
 
-  QuestionnaireView(this.submissionId);
+  QuestionnaireViewRevision(this.submissionId);
 
   @override
   Widget build(BuildContext context) {
-    // print("nowwwwwwxdcfgvbhjnmjnbhgvfcdecfvgbhjnmkjnhbgfcdcfvgbnhjmnhbgfdcfvgbhjnmkjhgfdxcfvgbhjn");
     final _questionnaireFormKey = new GlobalKey<FormState>();
 
     return ChangeNotifierProvider<QuestionnaireAnswersProvider>(
@@ -56,7 +55,7 @@ class QuestionnaireView extends StatelessWidget {
                                 child: ListView.builder(
                                   itemCount: snap.data.length,
                                   shrinkWrap: true,
-                                  primary: true,
+                                  primary: false,
                                   itemBuilder: (context, index) {
                                     Question question = snap.data[index];
                                     return QuestionGUIFetcher.getQuestionGUI(
@@ -79,13 +78,13 @@ class QuestionnaireView extends StatelessWidget {
                                       _questionnaireFormKey.currentState.save();
 
                                       List<SubmissionAnswer> answers =
-                                      await submit(
-                                          Provider.of<QuestionnaireAnswersProvider>(
-                                                  context,
-                                                  listen: false)
-                                              .answers,
-                                          submissionId,
-                                          context);
+                                          await submitRevision(
+                                              Provider.of<QuestionnaireAnswersProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .answers,
+                                              submissionId,
+                                              context);
                                     }
 
                                     Provider.of<QuestionnaireAnswersProvider>(
@@ -149,15 +148,15 @@ class QuestionnaireView extends StatelessWidget {
   }
 }
 
-Future<List<SubmissionAnswer>> submit(
+Future<List<SubmissionAnswer>> submitRevision(
     List<Answer> answers, submissionId, BuildContext context) async {
-  print("submitting answers");
+  print("resubmitting answers");
   List<SubmissionAnswer> submissionAnswers;
   LoadingDialog dialog =
       LoadingDialog(buildContext: context, loadingMessage: "Submitting ");
   dialog.show();
 
-  submissionAnswers = await ApiClient().submitPatientResponses(
+  submissionAnswers = await ApiClient().reSubmitPatientResponses(
       submission:
           SubmissionRequestBody(submissionId: submissionId, answers: answers));
   dialog.hide();
@@ -182,4 +181,3 @@ Future<List<SubmissionAnswer>> submit(
         gravity: EdgeAlert.TOP);
   }
 }
-

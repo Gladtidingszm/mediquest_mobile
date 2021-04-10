@@ -3,12 +3,15 @@ import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
 import 'package:loading_dialog/loading_dialog.dart';
+import 'package:mediquest_mobile/components/SubmissionReviseCommentView.dart';
 import 'package:mediquest_mobile/managers/QuestionnaireManager.dart';
 import 'package:mediquest_mobile/models/Patient.dart';
 import 'package:mediquest_mobile/models/Questionnaire.dart';
 import 'package:mediquest_mobile/screens/CreatePatient.dart';
 import 'package:mediquest_mobile/screens/QuestionaireView.dart';
 import 'package:mediquest_mobile/utils/GUIUtils.dart';
+
+import 'QuestionnaireRevisionView.dart';
 
 class PatientListScreen extends StatefulWidget {
   Questionnaire questionnaire;
@@ -40,7 +43,7 @@ class _PatientListScreenState extends State<PatientListScreen>
         backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
         title: Row(
           children: [
-            Text("Survey Patients"),
+            Text("Interview Patients"),
             SizedBox(
               width: 20,
             ),
@@ -77,9 +80,9 @@ class _PatientListScreenState extends State<PatientListScreen>
                               style: TextStyle(
                                   fontSize: 13.0, fontWeight: FontWeight.bold),
                             ),
-                            trailing: patient.submitted == 1
+                            trailing: patient.submitted
                                 ? Text(
-                                    "Submitted",
+                                    "Submitted (${patient.submission.status})",
                                     style: TextStyle(color: Colors.green),
                                   )
                                 : Text(
@@ -94,15 +97,6 @@ class _PatientListScreenState extends State<PatientListScreen>
                                   child: SingleChildScrollView(
                                     child: Row(
                                       children: [
-                                        Expanded(
-                                          child: FlatButton(
-                                            child: Text("Questionnaire"),
-                                            onPressed: () {
-                                              showQuestionnaire(
-                                                  context, patient);
-                                            },
-                                          ),
-                                        ),
                                         Expanded(
                                           child: FlatButton(
                                             child: Text(
@@ -132,6 +126,44 @@ class _PatientListScreenState extends State<PatientListScreen>
                                             },
                                           ),
                                         ),
+                                        patient?.submitted
+                                            ? Expanded(
+                                                child: FlatButton(
+                                                  child: Text("Redo"),
+                                                  onPressed: () {
+                                                    showReviseQuestionnaire(
+                                                        context,
+                                                        patient
+                                                            ?.submission?.id);
+                                                  },
+                                                ),
+                                              )
+                                            : Expanded(
+                                                child: FlatButton(
+                                                  child: Text("Questionnaire"),
+                                                  onPressed: () {
+                                                    showQuestionnaire(
+                                                        context, patient);
+                                                  },
+                                                ),
+                                              ),
+                                        patient?.submission?.status
+                                                    ?.toLowerCase() ==
+                                                "revise"
+                                            ? Expanded(
+                                                child: FlatButton(
+                                                  child: Text(
+                                                    "View Comment",
+                                                  ),
+                                                  onPressed: () {
+                                                    showAddCommentDialog(
+                                                        context,
+                                                        patient?.submission
+                                                            ?.comment);
+                                                  },
+                                                ),
+                                              )
+                                            : Container(),
                                       ],
                                     ),
                                   ),
@@ -199,32 +231,6 @@ class _PatientListScreenState extends State<PatientListScreen>
         // Flaoting Action button Icon
         icon: AnimatedIcons.add_event,
       ),
-      //   floatingActionButton: FabCircularMenu(
-      //       fabOpenColor: Colors.red,
-      //       ringDiameter: 200,
-      // fabColor: Colors.red,
-      // children: <Widget>[
-      // IconButton(icon: FaIcon(FontAwesomeIcons.plus), onPressed: () {
-      //   showDialog(
-      //     context: context,
-      //     barrierDismissible: true,
-      //     builder: (context) {
-      //       return CreatePatient();
-      //     },
-      //   );
-      //
-      // }),
-      // IconButton(icon: Icon(Icons.clear,size: 35,), onPressed: () {
-      //   CoolAlert.show(
-      //     context: context,
-      //     type: CoolAlertType.confirm,
-      //     confirmBtnText: "Yes",
-      //     cancelBtnText: "Cancel",
-      //     text: "Are you sure you want to clear patients!",
-      //   );
-      // })
-      // ]
-      // ),
     );
   }
 
@@ -241,6 +247,28 @@ class _PatientListScreenState extends State<PatientListScreen>
 
     super.initState();
   }
+}
+
+YYDialog showAddCommentDialog(BuildContext context, String comment) {
+  return YYDialog().build(context)
+    ..width = screenHeight(context) * 0.6
+    //..height = screenWidth(context)*0.99
+    ..backgroundColor = Colors.blueGrey
+    ..borderRadius = 10.0
+    ..showCallBack = () {
+      print("showCallBack invoke");
+    }
+    ..dismissCallBack = () {
+      print("dismissCallBack invoke");
+    }
+    ..widget(SubmissionReviseCommentView(comment))
+    ..animatedFunc = (child, animation) {
+      return ScaleTransition(
+        child: child,
+        scale: Tween(begin: 0.0, end: 1.0).animate(animation),
+      );
+    }
+    ..show();
 }
 
 Future<List<Patient>> getQuestionnairePatients(int patientId) async {
@@ -281,10 +309,32 @@ Future<Patient> removePatient(int patientId, BuildContext context) async {
   }
 }
 
-YYDialog showQuestionnaire(BuildContext context, Patient patient) {
+YYDialog showReviseQuestionnaire(BuildContext context, int submissionId) {
   return YYDialog().build(context)
     ..width = screenHeight(context) * 0.6
     //..height = screenWidth(context)*0.99
+    ..backgroundColor = Colors.blueGrey
+    ..borderRadius = 10.0
+    ..showCallBack = () {
+      print("showCallBack invoke");
+    }
+    ..dismissCallBack = () {
+      print("dismissCallBack invoke");
+    }
+    ..widget(QuestionnaireViewRevision(submissionId))
+    ..animatedFunc = (child, animation) {
+      return ScaleTransition(
+        child: child,
+        scale: Tween(begin: 0.0, end: 1.0).animate(animation),
+      );
+    }
+    ..show();
+}
+
+YYDialog showQuestionnaire(BuildContext context, Patient patient) {
+  return YYDialog().build(context)
+    // ..width = screenHeight(context) * 0.6
+    // ..height = screenHeight(context)*0.7
     ..backgroundColor = Colors.blueGrey
     ..borderRadius = 10.0
     ..showCallBack = () {
